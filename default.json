@@ -35,59 +35,6 @@
             "versioningTemplate": "nuget"
         }
     ],
-    "packageRules": [
-        {
-            "matchManagers": [
-                "nuget"
-            ],
-            "excludePackagePatterns": [
-                "^Microsoft\\.Extensions\\.",
-                "^System\\.",
-                "^dotnet-sdk$",
-                "^Microsoft\\.CodeAnalysis\\.CSharp\\."
-            ],
-            "groupName": "NuGet dependencies"
-        },
-        {
-            "matchManagers": [
-                "nuget"
-            ],
-            "matchPackagePatterns": [
-                "^Microsoft\\.(Extensions|AspNetCore)\\.",
-                "^System\\.",
-                "^Microsoft\\.CodeAnalysis\\.CSharp\\."
-            ],
-            "groupName": "Ignored NuGet dependencies",
-            "description": "These packages are usually set to a user-defined minimal supported version such as 6.0.0 for .NET 6, and they are overriden by consuming applications",
-            "enabled": false
-        },
-        {
-            "matchManagers": [
-                "nuget"
-            ],
-            "excludePackageNames": [
-                "xunit"
-            ],
-            "description": "We want to avoid updates to xunit versions given that the current version is highest non-breaking version for this project.",
-            "enabled": false
-        },
-        {
-            "matchPackageNames": [
-                "dotnet-sdk"
-            ],
-            "groupName": "Dotnet SDK",
-            "description": "Only update patch and minor for the dotnet SDK version within the global.json",
-            "extends": [
-                ":disableMajorUpdates"
-            ]
-        },
-        {
-            "matchManagers": [
-                "github-actions"
-            ],
-            "groupName": "Pipeline dependencies"
-        }
-    ],
     "vulnerabilityAlerts": {
         "enabled": true,
         "labels": [
