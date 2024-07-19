@@ -26,27 +26,21 @@
         "<dependency\\s+id=\"(?<depName>.*?)\"\\s+version=\"(?<currentValue>.*?)\"\\s*\\/>"
       ],
       "datasourceTemplate": "nuget",
-      "versioningTemplate": "nuget"
+      "versioningTemplate": "nuget",
+      "enabled": true
     }
   ],
   "packageRules": [
     {
       "groupName": "dotnet-sdk",
       "description": "Enable non-major updates for .NET SDK and runtime (global.json and Docker images)",
-      "matchPackageNames": [
-        "dotnet-sdk",
-        "mcr.microsoft.com/dotnet/sdk",
-        "mcr.microsoft.com/dotnet/aspnet",
-        "mcr.microsoft.com/dotnet/runtime",
-        "mcr.microsoft.com/dotnet/runtime-deps"
-      ],
       "matchPackagePatterns": [
         "^Microsoft\\.Extensions\\.",
         "^System\\.",
         "^Microsoft\\.CodeAnalysis\\.CSharp\\."
       ],
       "extends": [
-        ":disableMajorUpdates"
+        ":seperateMajorReleases"
       ]
     },
     {
