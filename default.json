@@ -35,7 +35,6 @@
       "groupName": "dotnet-sdk",
       "description": "Enable non-major updates for .NET SDK and runtime (global.json and Docker images)",
       "matchPackageNames": [
-        "dotnet-sdk",
         "mcr.microsoft.com/dotnet/sdk",
         "mcr.microsoft.com/dotnet/aspnet",
         "mcr.microsoft.com/dotnet/runtime",
