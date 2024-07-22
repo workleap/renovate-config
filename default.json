@@ -4,9 +4,6 @@
   "labels": [
     "renovate"
   ],
-  "enabledManagers": [
-    "nuget"
-  ],
   "extends": [
     "config:recommended",
     ":rebaseStalePrs",
@@ -77,8 +74,5 @@
     "labels": [
       "security"
     ]
-  },
-  "nuget": {
-    "enabled": true
   }
 }
