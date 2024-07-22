@@ -4,6 +4,16 @@
   "labels": [
     "renovate"
   ],
+  "enabledManagers": [
+    "dockerfile",
+    "docker-compose",
+    "github-actions",
+    "helnmfile",
+    "helm-values",
+    "helmv3",
+    "terraform",
+    "nuget"
+  ],
   "extends": [
     "config:recommended",
     ":rebaseStalePrs",
