@@ -57,6 +57,12 @@
       ]
     },
     {
+      "matchManagers": ["nuget"],
+      "matchPackagePatterns": ["^Hangfire\\."],
+      "groupName": "Hangfire dependencies",
+      "description": "Group Hangfire dependencies."
+    },
+    {
       "matchManagers": [
         "github-actions"
       ],
