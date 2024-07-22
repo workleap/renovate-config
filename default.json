@@ -42,7 +42,7 @@
         "mcr.microsoft.com/dotnet/runtime-deps"
       ],
       "extends": [
-        ":separateMajorReleases",
+        ":separateMajorReleases"
       ]
     },
     {
