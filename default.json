@@ -8,7 +8,6 @@
     "dockerfile",
     "docker-compose",
     "github-actions",
-    "helmfile",
     "helm-values",
     "helmv3",
     "terraform",
@@ -51,6 +50,7 @@
         "mcr.microsoft.com/dotnet/runtime",
         "mcr.microsoft.com/dotnet/runtime-deps"
       ],
+      "minimumReleaseAge": "3 days",
       "extends": [
         ":separateMajorReleases"
       ]
