@@ -25,6 +25,7 @@
   "branchConcurrentLimit": 0,
   "dependencyDashboard": false,
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
+  "configMigration": true,
   "customManagers": [
     {
       "customType": "regex",
@@ -58,7 +59,7 @@
       ]
     },
     {
-      "groupName": "nuget",
+      "groupName": "microsoft",
       "matchPackagePatterns": [
         "^Microsoft\\.Extensions\\.",
         "^System\\.",
@@ -69,16 +70,23 @@
       ]
     },
     {
+      "groupName": "hangfire",
+      "description": "Group Hangfire dependencies.",
       "matchManagers": ["nuget"],
-      "matchPackagePatterns": ["^Hangfire\\."],
-      "groupName": "Hangfire dependencies",
-      "description": "Group Hangfire dependencies."
+      "matchPackagePatterns": ["^Hangfire\\."]
     },
     {
+      "groupName": "Pipeline dependencies",
       "matchManagers": [
         "github-actions"
-      ],
-      "groupName": "Pipeline dependencies"
+      ]
+    },
+    {
+      "groupName": "gsoft deprecated",
+      "description": "Update deprecated GSoft packages to their Workleap couterpart",
+      "matchManagers": ["nuget"],
+      "matchPackagePatterns": ["^GSoft\\..+"],
+      "replacementNameTemplate": "{{{replace GSoft\\. Workleap. packageName}}}"
     }
   ],
   "vulnerabilityAlerts": {
