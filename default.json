@@ -71,7 +71,7 @@
     },
     {
       "groupName": "hangfire",
-      "description": "Group Hangfire dependencies since ",
+      "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
       "matchManagers": ["nuget"],
       "matchPackagePatterns": ["^Hangfire\\."]
     },
