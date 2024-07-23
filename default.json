@@ -12,6 +12,7 @@
     "helmv3",
     "regex",
     "terraform",
+    "npm",
     "nuget"
   ],
   "extends": [
