@@ -10,6 +10,7 @@
     "github-actions",
     "helm-values",
     "helmv3",
+    "regex",
     "terraform",
     "nuget"
   ],
@@ -24,8 +25,9 @@
   "branchConcurrentLimit": 0,
   "dependencyDashboard": false,
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
-  "regexManagers": [
+  "customManagers": [
     {
+      "customType": "regex",
       "description": "nuspec files manager",
       "fileMatch": [
         "\\.nuspec$"
