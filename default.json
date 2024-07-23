@@ -39,8 +39,7 @@
         "<dependency\\s+id=\"(?<depName>.*?)\"\\s+version=\"(?<currentValue>.*?)\"\\s*\\/>"
       ],
       "datasourceTemplate": "nuget",
-      "versioningTemplate": "nuget",
-      "enabled": true
+      "versioningTemplate": "nuget"
     }
   ],
   "packageRules": [
@@ -72,7 +71,7 @@
     },
     {
       "groupName": "hangfire",
-      "description": "Group Hangfire dependencies.",
+      "description": "Group Hangfire dependencies since ",
       "matchManagers": ["nuget"],
       "matchPackagePatterns": ["^Hangfire\\."]
     },
@@ -84,10 +83,10 @@
     },
     {
       "groupName": "gsoft deprecated",
-      "description": "Update deprecated GSoft packages to their Workleap couterpart",
+      "description": "Update deprecated GSoft packages to their Workleap counterpart",
       "matchManagers": ["nuget"],
       "matchPackagePatterns": ["^GSoft\\..+"],
-      "replacementNameTemplate": "{{{replace GSoft\\. Workleap. packageName}}}"
+      "replacementNameTemplate": "{{{replace 'GSoft\\.' 'Workleap.' packageName}}}"
     }
   ],
   "vulnerabilityAlerts": {
