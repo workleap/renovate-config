@@ -43,7 +43,7 @@
   "packageRules": [
     {
       "groupName": "dotnet-sdk",
-      "description": "Enable non-major updates for .NET SDK and runtime (global.json and Docker images)",
+      "description": "Enable non-major .NET SDK and runtime updates (global.json, Docker images) with a 3-day delay to account for the tow of them not releasing at the same time. https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/",
       "matchPackageNames": [
         "dotnet-sdk",
         "mcr.microsoft.com/dotnet/sdk",
@@ -78,13 +78,6 @@
       "matchManagers": [
         "github-actions"
       ]
-    },
-    {
-      "groupName": "gsoft deprecated",
-      "description": "Update deprecated GSoft packages to their Workleap counterpart",
-      "matchManagers": ["nuget"],
-      "matchPackagePatterns": ["^GSoft\\..+"],
-      "replacementNameTemplate": "{{{replace 'GSoft\\.' 'Workleap.' packageName}}}"
     },
     {
       "groupName": "npm",
