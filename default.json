@@ -43,7 +43,7 @@
   "packageRules": [
     {
       "groupName": "dotnet-sdk",
-      "description": "Enable non-major .NET SDK and runtime updates (global.json, Docker images) with a 3-day delay to account for the tow of them not releasing at the same time. https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/",
+      "description": "Update major and non-major .NET SDK and runtime updates seperately to isolate breaking changes with a 3-day delay to account for the two of them (global.json, Docker images) not releasing at the same time. https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/",
       "matchPackageNames": [
         "dotnet-sdk",
         "mcr.microsoft.com/dotnet/sdk",
