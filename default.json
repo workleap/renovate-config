@@ -17,9 +17,7 @@
   ],
   "extends": [
     "config:recommended",
-    ":rebaseStalePrs",
-    ":pinDependencies",
-    ":pinDevDependencies"
+    ":rebaseStalePrs"
   ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
@@ -87,6 +85,14 @@
       "matchManagers": ["nuget"],
       "matchPackagePatterns": ["^GSoft\\..+"],
       "replacementNameTemplate": "{{{replace 'GSoft\\.' 'Workleap.' packageName}}}"
+    },
+    {
+      "groupName": "npm",
+      "matchManagers": ["npm"],
+      "extends": [
+          ":pinDependencies",
+          ":pinDevDependencies"
+      ]
     }
   ],
   "vulnerabilityAlerts": {
