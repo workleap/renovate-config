@@ -8,7 +8,8 @@
     "config:recommended",
     ":rebaseStalePrs",
     ":pinDependencies",
-    ":pinDevDependencies"
+    ":pinDevDependencies",
+    ":semanticCommits"
   ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
@@ -26,8 +27,7 @@
         "<dependency\\s+id=\"(?<depName>.*?)\"\\s+version=\"(?<currentValue>.*?)\"\\s*\\/>"
       ],
       "datasourceTemplate": "nuget",
-      "versioningTemplate": "nuget",
-      "enabled": true
+      "versioningTemplate": "nuget"
     }
   ],
   "packageRules": [
