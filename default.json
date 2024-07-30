@@ -17,7 +17,8 @@
   ],
   "extends": [
     "config:recommended",
-    ":rebaseStalePrs"
+    ":rebaseStalePrs",
+    ":semanticCommits"
   ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
