@@ -60,9 +60,8 @@
     {
       "groupName": "microsoft",
       "matchPackagePatterns": [
-        "^Microsoft\\.Extensions\\.",
-        "^System\\.",
-        "^Microsoft\\.CodeAnalysis\\.CSharp\\."
+        "^[mM]icrosoft\\.",
+        "^[sS]ystem\\."
       ],
       "extends": [
         ":separateMajorReleases"

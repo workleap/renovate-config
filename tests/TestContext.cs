@@ -74,6 +74,7 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
         {
             MarkdownDocument markdownDocument = Markdown.Parse(pullRequest.Body, pipeline);
             var prTitle = pullRequest.Title;
+            var prLabels = pullRequest.Labels.Select(x => x.Name).Order();
 
             var table = markdownDocument.OfType<Table>().First();
             var rows = table.Skip(1).OfType<TableRow>().ToArray();
@@ -89,7 +90,7 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
                 packageUpdateInfos.Add(new PackageUpdateInfos(packge, type, update));
             }
 
-            pullRequestsInfos.Add(new PullRequestInfos(prTitle, packageUpdateInfos.OrderBy(x => x.Package).ThenBy(x => x.Type).ThenBy(x => x.Update)));
+            pullRequestsInfos.Add(new PullRequestInfos(prTitle, prLabels, packageUpdateInfos.OrderBy(x => x.Package).ThenBy(x => x.Type).ThenBy(x => x.Update)));
         }
 
         return pullRequestsInfos;
