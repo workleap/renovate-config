@@ -1,4 +1,3 @@
-using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using Meziantou.Framework.InlineSnapshotTesting;
 using Xunit.Abstractions;
