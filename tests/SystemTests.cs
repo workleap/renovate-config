@@ -25,20 +25,59 @@ public class SystemTests
 
         await testContext.RunRenovate();
 
-        var pullRequests = await testContext.GetPullRequests();
+        await testContext.AssertPullRequest("""
+                                            - Title: chore(deps): update dotnet monorepo
+                                              PackageUpdatesInfos:
+                                                - Package: dotnet-sdk
+                                                  Type: dotnet-sdk
+                                                  Update: patch
+                                                - Package: mcr.microsoft.com/dotnet/aspnet
+                                                  Type: final
+                                                  Update: patch
+                                                - Package: mcr.microsoft.com/dotnet/sdk
+                                                  Type: stage
+                                                  Update: patch
+                                            - Title: chore(deps): update dotnet monorepo (major)
+                                              PackageUpdatesInfos:
+                                                - Package: dotnet-sdk
+                                                  Type: dotnet-sdk
+                                                  Update: major
+                                                - Package: mcr.microsoft.com/dotnet/aspnet
+                                                  Type: final
+                                                  Update: major
+                                                - Package: mcr.microsoft.com/dotnet/sdk
+                                                  Type: stage
+                                                  Update: major
+                                            """);
 
-        InlineSnapshot.Validate(pullRequests, """
-            - Title: chore(deps): update dependency dotnet-sdk to v5.0.408
-              PackageUpdatesInfos:
-                - Package: dotnet-sdk
-                  Type: dotnet-sdk
-                  Update: patch
-            - Title: chore(deps): update dependency dotnet-sdk to v8
-              PackageUpdatesInfos:
-                - Package: dotnet-sdk
-                  Type: dotnet-sdk
-                  Update: major
-            """);
+        // var pullRequests = await testContext.GetPullRequests();
+        //
+        // InlineSnapshot
+        //   .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to v[^ ]+ ?", "")))
+        //   .Validate(pullRequests, """
+        //     - Title: chore(deps): update dotnet monorepo
+        //       PackageUpdatesInfos:
+        //         - Package: dotnet-sdk
+        //           Type: dotnet-sdk
+        //           Update: patch
+        //         - Package: mcr.microsoft.com/dotnet/aspnet
+        //           Type: final
+        //           Update: patch
+        //         - Package: mcr.microsoft.com/dotnet/sdk
+        //           Type: stage
+        //           Update: patch
+        //     - Title: chore(deps): update dotnet monorepo (major)
+        //       PackageUpdatesInfos:
+        //         - Package: dotnet-sdk
+        //           Type: dotnet-sdk
+        //           Update: major
+        //         - Package: mcr.microsoft.com/dotnet/aspnet
+        //           Type: final
+        //           Update: major
+        //         - Package: mcr.microsoft.com/dotnet/sdk
+        //           Type: stage
+        //           Update: major
+        //     """);
     }
 }
 
