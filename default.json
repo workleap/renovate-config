@@ -4,11 +4,20 @@
   "labels": [
     "renovate"
   ],
+  "enabledManagers": [
+    "dockerfile",
+    "docker-compose",
+    "github-actions",
+    "helm-values",
+    "helmv3",
+    "regex",
+    "terraform",
+    "npm",
+    "nuget"
+  ],
   "extends": [
     "config:recommended",
     ":rebaseStalePrs",
-    ":pinDependencies",
-    ":pinDevDependencies",
     ":semanticCommits"
   ],
   "prHourlyLimit": 0,
@@ -16,8 +25,10 @@
   "branchConcurrentLimit": 0,
   "dependencyDashboard": false,
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
-  "regexManagers": [
+  "configMigration": true,
+  "customManagers": [
     {
+      "customType": "regex",
       "description": "nuspec files manager",
       "fileMatch": [
         "\\.nuspec$"
@@ -33,7 +44,21 @@
   "packageRules": [
     {
       "groupName": "dotnet-sdk",
-      "description": "Enable non-major updates for .NET SDK and runtime (global.json and Docker images)",
+      "description": "Update major and non-major .NET SDK and runtime updates seperately to isolate breaking changes with a 3-day delay to account for the two of them (global.json, Docker images) not releasing at the same time. https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/",
+      "matchPackageNames": [
+        "dotnet-sdk",
+        "mcr.microsoft.com/dotnet/sdk",
+        "mcr.microsoft.com/dotnet/aspnet",
+        "mcr.microsoft.com/dotnet/runtime",
+        "mcr.microsoft.com/dotnet/runtime-deps"
+      ],
+      "minimumReleaseAge": "3 days",
+      "extends": [
+        ":separateMajorReleases"
+      ]
+    },
+    {
+      "groupName": "microsoft",
       "matchPackagePatterns": [
         "^Microsoft\\.Extensions\\.",
         "^System\\.",
@@ -44,10 +69,24 @@
       ]
     },
     {
+      "groupName": "hangfire",
+      "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
+      "matchManagers": ["nuget"],
+      "matchPackagePatterns": ["^Hangfire\\."]
+    },
+    {
+      "groupName": "pipeline dependencies",
       "matchManagers": [
         "github-actions"
-      ],
-      "groupName": "Pipeline dependencies"
+      ]
+    },
+    {
+      "groupName": "npm",
+      "matchManagers": ["npm"],
+      "extends": [
+          ":pinDependencies",
+          ":pinDevDependencies"
+      ]
     }
   ],
   "vulnerabilityAlerts": {
