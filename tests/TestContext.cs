@@ -13,7 +13,6 @@ namespace renovate_config.tests;
 public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temporaryDirectory, GitHubClient gitHubClient)
 {
     private const string DefaultBranchName = "main";
-    private const string GitUrl = "https://github.com/gsoft-inc/renovate-config-test";
     private readonly string _repoPath = temporaryDirectory.FullPath;
 
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
@@ -37,12 +36,13 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
     public async Task RunRenovate()
     {
         var token = await GetGitHubToken(outputHelper);
+        var gitUrl = $"https://{token}@github.com/gsoft-inc/renovate-config-test";
 
         await this.CleanupRepository();
 
         await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "add", "."] );
         await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "commit", "--message", "IDP ScaffoldIt automated test", "--author", "IDP ScaffoldIt <idp@workleap.com>"]);
-        await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "push", GitUrl, DefaultBranchName + ":" + DefaultBranchName, "--force"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "push", gitUrl, DefaultBranchName + ":" + DefaultBranchName, "--force"]);
 
         await ExecuteCommand(
             outputHelper,
@@ -103,7 +103,17 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
 
         foreach (var branch in branchesToDelete)
         {
-            await gitHubClient.Git.Reference.Delete("gsoft-inc", "renovate-config-test", $"heads/{branch.Name}");
+            outputHelper.WriteLine($"Deleting branch: {branch.Name}");
+
+            try
+            {
+                await gitHubClient.Git.Reference.Delete("gsoft-inc", "renovate-config-test", $"heads/{branch.Name}");
+            }
+            catch (NotFoundException)
+            {
+                // Ignore if it doesn't exist
+                outputHelper.WriteLine($"Deleting branch was not found: {branch.Name}");
+            }
         }
     }
 
@@ -113,6 +123,7 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
 
         if (string.IsNullOrEmpty(token))
         {
+            outputHelper.WriteLine("GitHub token not found, running `gh auth login` to authenticate");
             var (stdout, _) = await ExecuteCommand(outputHelper, "gh", ["auth", "token"]);
 
             token = stdout.Trim();
