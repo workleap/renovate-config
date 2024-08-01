@@ -4,7 +4,6 @@ namespace renovate_config.tests;
 
 public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 {
-
     [Fact]
     public async Task RenovateDotnetSdkDependencies()
     {
