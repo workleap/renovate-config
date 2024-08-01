@@ -77,17 +77,17 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
           Labels:
             - renovate
           PackageUpdatesInfos:
-            - Package: Hangfire  ( source )
+            - Package: Hangfire
               Type: nuget
               Update: minor
         - Title: chore(deps): update hangfire
           Labels:
             - renovate
           PackageUpdatesInfos:
-            - Package: Hangfire.Core  ( source )
+            - Package: Hangfire.Core
               Type: nuget
               Update: minor
-            - Package: Hangfire.NetCore  ( source )
+            - Package: Hangfire.NetCore
               Type: nuget
               Update: minor
             - Package: Hangfire.Pro.Redis
@@ -119,23 +119,23 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
       await testContext.AssertPullRequests(
           """
-            - Title: fix(deps): pin dependencies
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: @azure/msal-browser
-                  Type: dependencies
-                  Update: pin
-                - Package: @azure/msal-react
-                  Type: dependencies
-                  Update: pin
-                - Package: @storybook/addon-essentials  ( source )
-                  Type: devDependencies
-                  Update: pin
-                - Package: @storybook/addon-interactions  ( source )
-                  Type: devDependencies
-                  Update: pin
-            """);
+        - Title: fix(deps): pin dependencies
+          Labels:
+            - renovate
+          PackageUpdatesInfos:
+            - Package: @azure/msal-browser
+              Type: dependencies
+              Update: pin
+            - Package: @azure/msal-react
+              Type: dependencies
+              Update: pin
+            - Package: @storybook/addon-essentials
+              Type: devDependencies
+              Update: pin
+            - Package: @storybook/addon-interactions
+              Type: devDependencies
+              Update: pin
+        """);
     }
 
     [Fact]
@@ -167,26 +167,26 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
           Labels:
             - renovate
           PackageUpdatesInfos:
-            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect  ( source )
+            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
               Type: nuget
               Update: patch
-            - Package: Microsoft.Azure.AppConfiguration.AspNetCore  ( source )
+            - Package: Microsoft.Azure.AppConfiguration.AspNetCore
               Type: nuget
               Update: minor
-            - Package: System.Text.Json  ( source )
+            - Package: System.Text.Json
               Type: nuget
               Update: patch
         - Title: chore(deps): update microsoft (major)
           Labels:
             - renovate
           PackageUpdatesInfos:
-            - Package: Microsoft.ApplicationInsights.AspNetCore  ( source )
+            - Package: Microsoft.ApplicationInsights.AspNetCore
               Type: nuget
               Update: major
-            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect  ( source )
+            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
               Type: nuget
               Update: major
-            - Package: System.Text.Json  ( source )
+            - Package: System.Text.Json
               Type: nuget
               Update: major
         """);
