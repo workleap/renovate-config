@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace renovate_config.tests;
 
-public sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temporaryDirectory, GitHubClient gitHubClient): IAsyncDisposable
+internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temporaryDirectory, GitHubClient gitHubClient): IAsyncDisposable
 {
     private const string DefaultBranchName = "main";
     private readonly string _repoPath = temporaryDirectory.FullPath;
