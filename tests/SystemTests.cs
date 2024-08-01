@@ -190,4 +190,23 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               Update: major
         """);
     }
+
+    [Fact]
+    public async Task DisableGitVersionMsBuildPackage()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddFile("project.csproj",
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup>
+                <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" />
+              </ItemGroup>
+            </Project>
+            """);
+
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests("[]");
+    }
 }
