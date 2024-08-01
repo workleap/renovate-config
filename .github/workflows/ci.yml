@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+
+      - name: Test with the dotnet CLI
+        run: dotnet test tests 
+        env:
+          TEST_GITHUB_TOKEN: ${{secrets.TEST_GITHUB_TOKEN}}
