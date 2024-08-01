@@ -71,7 +71,9 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
         var pullRequests = await GetPullRequests();
         InlineSnapshot
             .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
+        // ReSharper disable ExplicitCallerInfoArgument
             .Validate(pullRequests, expected, filePath, lineNumber);
+        // ReSharper restore ExplicitCallerInfoArgument
     }
 
     public async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
