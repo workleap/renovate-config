@@ -7,7 +7,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RenovateDotnetSdkDependencies()
     {
-        var testContext = await TestContext.CreateAsync(testOutputHelper);
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
         testContext.AddFile("global.json", /*lang=json*/"""{"sdk": {"version": "6.0.100"}}""");
         testContext.AddFile("Dockerfile",
@@ -52,10 +52,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RenovateHangfireDependencies()
     {
-      var testContext = await TestContext.CreateAsync(testOutputHelper);
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-      testContext.AddFile("project.csproj",
-        """
+        testContext.AddFile("project.csproj",
+          """
         <Project Sdk="Microsoft.NET.Sdk">
           <ItemGroup>
             <PackageReference Include="Hangfire" Version="1.7.0" />
@@ -68,10 +68,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         </Project>
         """);
 
-      await testContext.RunRenovate();
+        await testContext.RunRenovate();
 
-      await testContext.AssertPullRequests(
-        """
+        await testContext.AssertPullRequests(
+          """
         - Title: chore(deps): update dependency hangfire  to redacted
           Labels:
             - renovate
@@ -98,10 +98,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RenovatePackageJsonDependencies()
     {
-      var testContext = await TestContext.CreateAsync(testOutputHelper);
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-      testContext.AddFile("package.json",
-        """
+        testContext.AddFile("package.json",
+          """
         {
           "dependencies": {
             "@azure/msal-browser": "^3.13.0",
@@ -114,10 +114,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         }
         """);
 
-      await testContext.RunRenovate();
+        await testContext.RunRenovate();
 
-      await testContext.AssertPullRequests(
-          """
+        await testContext.AssertPullRequests(
+            """
         - Title: fix(deps): pin dependencies
           Labels:
             - renovate
@@ -140,10 +140,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RenovateMicrosoftDependencies()
     {
-      var testContext = await TestContext.CreateAsync(testOutputHelper);
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-      testContext.AddFile("project.csproj",
-        """
+        testContext.AddFile("project.csproj",
+          """
         <Project Sdk="Microsoft.NET.Sdk">
           <ItemGroup>
             <PackageReference Include="System.Text.Json" Version="7.0.0" />
@@ -158,10 +158,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         </Project>
         """);
 
-      await testContext.RunRenovate();
+        await testContext.RunRenovate();
 
-      await testContext.AssertPullRequests(
-          """
+        await testContext.AssertPullRequests(
+            """
         - Title: chore(deps): update microsoft
           Labels:
             - renovate

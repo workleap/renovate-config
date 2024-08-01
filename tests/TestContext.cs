@@ -137,7 +137,7 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
 
         if (string.IsNullOrEmpty(token))
         {
-            outputHelper.WriteLine("GitHub token not found, running `gh auth login` to authenticate");
+            outputHelper.WriteLine("GitHub token not found from environment variable, running `gh auth login` to authenticate");
             var (stdout, _) = await ExecuteCommand(outputHelper, "gh", ["auth", "token"]);
 
             token = stdout.Trim();
@@ -159,7 +159,6 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
 
         return githubClient;
     }
-
 
     private static void CopyRenovateFile(TemporaryDirectory temporaryDirectory)
     {
@@ -201,5 +200,6 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
     public async ValueTask DisposeAsync()
     {
         await temporaryDirectory.DisposeAsync();
+        await CleanupRepository();
     }
 }
