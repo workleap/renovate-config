@@ -198,7 +198,3 @@ public class SystemTests
         """);
     }
 }
-
-public record PullRequestInfos(string Title, IEnumerable<string> Labels, IEnumerable<PackageUpdateInfos> PackageUpdatesInfos);
-
-public record PackageUpdateInfos(string Package, string Type, string Update);

@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace renovate_config.tests;
 
-public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temporaryDirectory, GitHubClient gitHubClient)
+public sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temporaryDirectory, GitHubClient gitHubClient): IAsyncDisposable
 {
     private const string DefaultBranchName = "main";
     private readonly string _repoPath = temporaryDirectory.FullPath;
@@ -97,11 +97,11 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
 
             foreach (var row in rows)
             {
-                var packge = row[0].InnerText().Trim();
+                var package = row[0].InnerText().Replace("( source )", string.Empty).Trim();
                 var type = row[1].InnerText().Trim();
                 var update = row[2].InnerText().Trim();
 
-                packageUpdateInfos.Add(new PackageUpdateInfos(packge, type, update));
+                packageUpdateInfos.Add(new PackageUpdateInfos(package, type, update));
             }
 
             pullRequestsInfos.Add(new PullRequestInfos(prTitle, prLabels, packageUpdateInfos.OrderBy(x => x.Package).ThenBy(x => x.Type).ThenBy(x => x.Update)));
@@ -196,5 +196,10 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
             .ExecuteAsync();
 
         return (stdOut.ToString(), stdErr.ToString());
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await temporaryDirectory.DisposeAsync();
     }
 }
