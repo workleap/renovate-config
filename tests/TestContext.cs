@@ -1,9 +1,12 @@
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using CliWrap;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Meziantou.Framework;
+using Meziantou.Framework.InlineSnapshotTesting;
 using Octokit;
 using Octokit.Internal;
 using Xunit.Abstractions;
@@ -60,6 +63,15 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
                 "renovate",
                 "gsoft-inc/renovate-config-test"
             ]);
+    }
+
+    [InlineSnapshotAssertion(nameof(expected))]
+    public async Task AssertPullRequests(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    {
+        var pullRequests = await GetPullRequests();
+        InlineSnapshot
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
+            .Validate(pullRequests, expected, filePath, lineNumber);
     }
 
     public async Task<IEnumerable<PullRequestInfos>> GetPullRequests()

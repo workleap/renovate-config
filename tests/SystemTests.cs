@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-using Meziantou.Framework.InlineSnapshotTesting;
 using Xunit.Abstractions;
 
 namespace renovate_config.tests;
@@ -27,11 +25,7 @@ public class SystemTests
 
         await testContext.RunRenovate();
 
-        var pullRequests = await testContext.GetPullRequests();
-
-        InlineSnapshot
-          .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
-          .Validate(pullRequests,
+        await testContext.AssertPullRequests(
             """
             - Title: chore(deps): update dotnet-sdk
               Labels:
@@ -83,33 +77,29 @@ public class SystemTests
 
       await testContext.RunRenovate();
 
-      var pullRequests = await testContext.GetPullRequests();
-
-      InlineSnapshot
-        .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
-        .Validate(pullRequests,
-          """
-            - Title: chore(deps): update dependency hangfire  to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Hangfire  ( source )
-                  Type: nuget
-                  Update: minor
-            - Title: chore(deps): update hangfire
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Hangfire.Core  ( source )
-                  Type: nuget
-                  Update: minor
-                - Package: Hangfire.NetCore  ( source )
-                  Type: nuget
-                  Update: minor
-                - Package: Hangfire.Pro.Redis
-                  Type: nuget
-                  Update: minor
-            """);
+      await testContext.AssertPullRequests(
+        """
+        - Title: chore(deps): update dependency hangfire  to redacted
+          Labels:
+            - renovate
+          PackageUpdatesInfos:
+            - Package: Hangfire  ( source )
+              Type: nuget
+              Update: minor
+        - Title: chore(deps): update hangfire
+          Labels:
+            - renovate
+          PackageUpdatesInfos:
+            - Package: Hangfire.Core  ( source )
+              Type: nuget
+              Update: minor
+            - Package: Hangfire.NetCore  ( source )
+              Type: nuget
+              Update: minor
+            - Package: Hangfire.Pro.Redis
+              Type: nuget
+              Update: minor
+        """);
     }
 
     [Fact]
@@ -133,11 +123,7 @@ public class SystemTests
 
       await testContext.RunRenovate();
 
-      var pullRequests = await testContext.GetPullRequests();
-
-      InlineSnapshot
-        .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, " to [^ ]+ ?", " to redacted")))
-        .Validate(pullRequests,
+      await testContext.AssertPullRequests(
           """
             - Title: fix(deps): pin dependencies
               Labels:
@@ -181,40 +167,35 @@ public class SystemTests
 
       await testContext.RunRenovate();
 
-      var pullRequests = await testContext.GetPullRequests();
-
-      InlineSnapshot
-        .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
-        .Validate(pullRequests,
+      await testContext.AssertPullRequests(
           """
-            - Title: chore(deps): update dependency system.text.json  to redacted[security]
-              Labels:
-                - security
-              PackageUpdatesInfos:
-                - Package: System.Text.Json  ( source )
-                  Type: nuget
-                  Update: major
-            - Title: chore(deps): update microsoft
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect  ( source )
-                  Type: nuget
-                  Update: patch
-                - Package: Microsoft.Azure.AppConfiguration.AspNetCore  ( source )
-                  Type: nuget
-                  Update: minor
-            - Title: chore(deps): update microsoft (major)
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Microsoft.ApplicationInsights.AspNetCore  ( source )
-                  Type: nuget
-                  Update: major
-                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect  ( source )
-                  Type: nuget
-                  Update: major
-            """);
+        - Title: chore(deps): update microsoft
+          Labels:
+            - renovate
+          PackageUpdatesInfos:
+            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect  ( source )
+              Type: nuget
+              Update: patch
+            - Package: Microsoft.Azure.AppConfiguration.AspNetCore  ( source )
+              Type: nuget
+              Update: minor
+            - Package: System.Text.Json  ( source )
+              Type: nuget
+              Update: patch
+        - Title: chore(deps): update microsoft (major)
+          Labels:
+            - renovate
+          PackageUpdatesInfos:
+            - Package: Microsoft.ApplicationInsights.AspNetCore  ( source )
+              Type: nuget
+              Update: major
+            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect  ( source )
+              Type: nuget
+              Update: major
+            - Package: System.Text.Json  ( source )
+              Type: nuget
+              Update: major
+        """);
     }
 }
 
