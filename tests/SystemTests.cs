@@ -162,32 +162,52 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-        - Title: chore(deps): update microsoft
-          Labels:
-            - renovate
-          PackageUpdatesInfos:
-            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
-              Type: nuget
-              Update: patch
-            - Package: Microsoft.Azure.AppConfiguration.AspNetCore
-              Type: nuget
-              Update: minor
-            - Package: System.Text.Json
-              Type: nuget
-              Update: patch
-        - Title: chore(deps): update microsoft (major)
-          Labels:
-            - renovate
-          PackageUpdatesInfos:
-            - Package: Microsoft.ApplicationInsights.AspNetCore
-              Type: nuget
-              Update: major
-            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
-              Type: nuget
-              Update: major
-            - Package: System.Text.Json
-              Type: nuget
-              Update: major
-        """);
+            - Title: chore(deps): update dependency system.text.json  to redacted[security]
+              Labels:
+                - security
+              PackageUpdatesInfos:
+                - Package: System.Text.Json
+                  Type: nuget
+                  Update: major
+            - Title: chore(deps): update microsoft
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
+                  Type: nuget
+                  Update: patch
+                - Package: Microsoft.Azure.AppConfiguration.AspNetCore
+                  Type: nuget
+                  Update: minor
+            - Title: chore(deps): update microsoft (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.ApplicationInsights.AspNetCore
+                  Type: nuget
+                  Update: major
+                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
+                  Type: nuget
+                  Update: major
+            """);
+    }
+
+    [Fact]
+    public async Task DisableGitVersionMsBuildPackage()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddFile("project.csproj",
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup>
+                <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" />
+              </ItemGroup>
+            </Project>
+            """);
+
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests("[]");
     }
 }

@@ -43,6 +43,16 @@
   ],
   "packageRules": [
     {
+      "groupName": "gitversion-msbuild",
+      "description": "Disable major updates as their are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
+      "matchPackageNames": [
+        "GitVersion.MsBuild"
+      ],
+      "extends": [
+        ":disableMajorUpdates"
+      ]
+    },
+    {
       "groupName": "dotnet-sdk",
       "description": "Update major and non-major .NET SDK and runtime updates seperately to isolate breaking changes with a 3-day delay to account for the two of them (global.json, Docker images) not releasing at the same time. https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/",
       "matchPackageNames": [
