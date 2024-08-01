@@ -41,7 +41,7 @@ public class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temp
         await this.CleanupRepository();
 
         await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "add", "."] );
-        await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "commit", "--message", "IDP ScaffoldIt automated test", "--author", "IDP ScaffoldIt <idp@workleap.com>"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
         await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "push", gitUrl, DefaultBranchName + ":" + DefaultBranchName, "--force"]);
 
         await ExecuteCommand(
