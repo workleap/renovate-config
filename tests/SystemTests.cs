@@ -2,14 +2,7 @@ using Xunit.Abstractions;
 
 namespace renovate_config.tests;
 
-public class SystemTests
-{
-    private readonly ITestOutputHelper _testOutputHelper;
-
-    public SystemTests(ITestOutputHelper testOutputHelper)
-    {
-        _testOutputHelper = testOutputHelper;
-    }
+public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
     [Fact]
     public async Task RenovateDotnetSdkDependencies()
