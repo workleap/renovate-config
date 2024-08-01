@@ -3,11 +3,12 @@ using Xunit.Abstractions;
 namespace renovate_config.tests;
 
 public sealed class SystemTests(ITestOutputHelper testOutputHelper)
+{
 
     [Fact]
     public async Task RenovateDotnetSdkDependencies()
     {
-        var testContext = await TestContext.CreateAsync(_testOutputHelper);
+        var testContext = await TestContext.CreateAsync(testOutputHelper);
 
         testContext.AddFile("global.json", /*lang=json*/"""{"sdk": {"version": "6.0.100"}}""");
         testContext.AddFile("Dockerfile",
@@ -52,7 +53,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RenovateHangfireDependencies()
     {
-      var testContext = await TestContext.CreateAsync(_testOutputHelper);
+      var testContext = await TestContext.CreateAsync(testOutputHelper);
 
       testContext.AddFile("project.csproj",
         """
@@ -98,7 +99,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RenovatePackageJsonDependencies()
     {
-      var testContext = await TestContext.CreateAsync(_testOutputHelper);
+      var testContext = await TestContext.CreateAsync(testOutputHelper);
 
       testContext.AddFile("package.json",
         """
@@ -140,7 +141,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     [Fact]
     public async Task RenovateMicrosoftDependencies()
     {
-      var testContext = await TestContext.CreateAsync(_testOutputHelper);
+      var testContext = await TestContext.CreateAsync(testOutputHelper);
 
       testContext.AddFile("project.csproj",
         """
