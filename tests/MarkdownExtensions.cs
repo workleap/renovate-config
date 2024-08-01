@@ -4,7 +4,7 @@ using Markdig.Syntax.Inlines;
 
 namespace renovate_config.tests;
 
-public static class MarkdownExtensions
+internal static class MarkdownExtensions
 {
     public static string ToNormalizedString(this MarkdownObject obj)
     {
