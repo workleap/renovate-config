@@ -162,33 +162,34 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-        - Title: chore(deps): update microsoft
-          Labels:
-            - renovate
-          PackageUpdatesInfos:
-            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
-              Type: nuget
-              Update: patch
-            - Package: Microsoft.Azure.AppConfiguration.AspNetCore
-              Type: nuget
-              Update: minor
-            - Package: System.Text.Json
-              Type: nuget
-              Update: patch
-        - Title: chore(deps): update microsoft (major)
-          Labels:
-            - renovate
-          PackageUpdatesInfos:
-            - Package: Microsoft.ApplicationInsights.AspNetCore
-              Type: nuget
-              Update: major
-            - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
-              Type: nuget
-              Update: major
-            - Package: System.Text.Json
-              Type: nuget
-              Update: major
-        """);
+            - Title: chore(deps): update dependency system.text.json  to redacted[security]
+              Labels:
+                - security
+              PackageUpdatesInfos:
+                - Package: System.Text.Json
+                  Type: nuget
+                  Update: major
+            - Title: chore(deps): update microsoft
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
+                  Type: nuget
+                  Update: patch
+                - Package: Microsoft.Azure.AppConfiguration.AspNetCore
+                  Type: nuget
+                  Update: minor
+            - Title: chore(deps): update microsoft (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.ApplicationInsights.AspNetCore
+                  Type: nuget
+                  Update: major
+                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
+                  Type: nuget
+                  Update: major
+            """);
     }
 
     [Fact]
