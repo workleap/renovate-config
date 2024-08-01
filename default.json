@@ -10,7 +10,7 @@
     "github-actions",
     "helm-values",
     "helmv3",
-    "regex",
+    "custom.regex",
     "terraform",
     "npm",
     "nuget"
@@ -59,9 +59,9 @@
     },
     {
       "groupName": "microsoft",
-      "matchPackagePatterns": [
-        "^[mM]icrosoft\\.",
-        "^[sS]ystem\\."
+      "matchPackageNames": [
+        "/^[mM]icrosoft\\./",
+        "/^[sS]ystem\\./"
       ],
       "extends": [
         ":separateMajorReleases"
@@ -70,8 +70,8 @@
     {
       "groupName": "hangfire",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
-      "matchManagers": ["nuget"],
-      "matchPackagePatterns": ["^Hangfire\\."]
+      "matchManagers": [ "nuget" ],
+      "matchPackageNames": [ "/^Hangfire\\./" ]
     },
     {
       "groupName": "pipeline dependencies",
@@ -83,8 +83,8 @@
       "groupName": "npm",
       "matchManagers": ["npm"],
       "extends": [
-          ":pinDependencies",
-          ":pinDevDependencies"
+        ":pinDependencies",
+        ":pinDevDependencies"
       ]
     }
   ],
