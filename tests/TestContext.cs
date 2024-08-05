@@ -113,9 +113,7 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
     private async Task CleanupRepository()
     {
         var branches = await gitHubClient.Repository.Branch.GetAll("gsoft-inc", "renovate-config-test");
-        var branchesToDelete = branches.Where(x => x.Name != DefaultBranchName);
-
-        foreach (var branch in branchesToDelete)
+        foreach (var branch in branches)
         {
             outputHelper.WriteLine($"Deleting branch: {branch.Name}");
 
