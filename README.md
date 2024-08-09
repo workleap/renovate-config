@@ -52,7 +52,7 @@ resources:
   - repository: templates
     type: git
     name: Shared-Assets/Pipeline-Library
-    ref: refs/tags/0.9.2
+    ref: refs/tags/1.2.3
 
 pool: 'Azure Pipelines'
 
