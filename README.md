@@ -23,7 +23,7 @@ The shared configurations are baselines. Each project is free to set their own r
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "platform": "azure",
-  "endpoint": "https://dev.azure.com/gsoft",
+  "endpoint": "https://dev.azure.com/YOUR_ORGANIZATION",
   "repositories": [
     "YOUR_REPO"
   ],
