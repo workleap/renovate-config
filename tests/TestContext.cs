@@ -59,6 +59,7 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
                 "-e", "RENOVATE_RECREATE_WHEN=always",
                 "-e", "RENOVATE_INHERIT_CONFIG_FILE_NAME=not-renovate.json",
                 "-e", "RENOVATE_REPOSITORIES=[\"https://github.com/gsoft-inc/renovate-config-test\"]",
+                "--pull", "always",
                 "renovate/renovate:latest",
                 "renovate",
                 "gsoft-inc/renovate-config-test"
