@@ -78,10 +78,10 @@
       ]
     },
     {
-      "groupName": "hangfire",
+      "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
-      "matchManagers": [ "nuget" ],
-      "matchPackageNames": [ "/^Hangfire\\./" ]
+      "matchManagers": ["nuget"],
+      "matchPackageNames": ["/^[hH]angfire(\\.|$)/"]
     },
     {
       "groupName": "pipeline dependencies",
