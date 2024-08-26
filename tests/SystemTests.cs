@@ -72,27 +72,20 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
           """
-        - Title: chore(deps): update dependency hangfire  to redacted
-          Labels:
-            - renovate
-          PackageUpdatesInfos:
-            - Package: Hangfire
-              Type: nuget
-              Update: minor
-        - Title: chore(deps): update hangfire
-          Labels:
-            - renovate
-          PackageUpdatesInfos:
-            - Package: Hangfire.Core
-              Type: nuget
-              Update: minor
-            - Package: Hangfire.NetCore
-              Type: nuget
-              Update: minor
-            - Package: Hangfire.Pro.Redis
-              Type: nuget
-              Update: minor
-        """);
+            - Title: chore(deps): update hangfire monorepo
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Hangfire
+                  Type: nuget
+                  Update: minor
+                - Package: Hangfire.Core
+                  Type: nuget
+                  Update: minor
+                - Package: Hangfire.Pro.Redis
+                  Type: nuget
+                  Update: minor
+            """);
     }
 
     [Fact]
