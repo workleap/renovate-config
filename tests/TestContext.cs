@@ -2,25 +2,32 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using CliWrap;
+using GitHub;
+using GitHub.Models;
+using GitHub.Octokit.Client;
+using GitHub.Octokit.Client.Authentication;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Meziantou.Framework;
 using Meziantou.Framework.InlineSnapshotTesting;
-using Octokit;
-using Octokit.Internal;
 using Xunit.Abstractions;
 
 namespace renovate_config.tests;
 
-internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirectory temporaryDirectory, GitHubClient gitHubClient): IAsyncDisposable
+internal sealed class TestContext(
+    ITestOutputHelper outputHelper,
+    TemporaryDirectory temporaryDirectory,
+    GitHubClient gitHubClient): IAsyncDisposable
 {
+    private static GitHubClient? _sharedGitHubClient;
+    
     private const string DefaultBranchName = "main";
     private readonly string _repoPath = temporaryDirectory.FullPath;
 
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
     {
-        var gitGubClient = await CreateGitHubClient(outputHelper);
+        var gitHubClient = await GetGitHubClient(outputHelper);
 
         var temporaryDirectory = TemporaryDirectory.Create();
         var repoPath = temporaryDirectory.FullPath;
@@ -28,12 +35,32 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
 
         CopyRenovateFile(temporaryDirectory);
 
-        return new TestContext(outputHelper, temporaryDirectory, gitGubClient);
+        return new TestContext(outputHelper, temporaryDirectory, gitHubClient);
     }
 
     public void AddFile(string path, string content)
     {
         temporaryDirectory.CreateTextFile(path, content);
+    }
+    
+    public void AddCiFile()
+    {
+        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml", 
+            """
+            name: CI
+            on:
+                pull_request: 
+                    branches:
+                        - "*"
+                        
+            jobs:
+                build:
+                    runs-on: ubuntu-latest
+                    steps:
+                        - name: Sleep
+                          run: sleep 10
+            """
+            );
     }
 
     public async Task RunRenovate()
@@ -77,19 +104,19 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
         // ReSharper restore ExplicitCallerInfoArgument
     }
 
-    public async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
+    public async Task<IEnumerable<PullRequestInfos>>  GetPullRequests()
     {
-        var pullRequests = await gitHubClient.PullRequest.GetAllForRepository("gsoft-inc", "renovate-config-test", new PullRequestRequest(){ Base = DefaultBranchName});
+        var pullRequests = await gitHubClient.Repos["gsoft-inc"]["renovate-config-test"].Pulls.GetAsync() ?? [];
 
         var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
         var pullRequestsInfos = new List<PullRequestInfos>(pullRequests.Count);
 
-        foreach (var pullRequest in pullRequests.OrderBy(x => x.Title))
+        foreach (PullRequestSimple pullRequest in pullRequests.OrderBy(x => x.Title))
         {
-            MarkdownDocument markdownDocument = Markdown.Parse(pullRequest.Body, pipeline);
+            MarkdownDocument markdownDocument = Markdown.Parse(pullRequest.Body!, pipeline);
             var prTitle = pullRequest.Title;
-            var prLabels = pullRequest.Labels.Select(x => x.Name).Order();
+            var prLabels = pullRequest.Labels!.Select(x => x.Name).Order();
 
             var table = markdownDocument.OfType<Table>().First();
             var rows = table.Skip(1).OfType<TableRow>().ToArray();
@@ -105,7 +132,12 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
                 packageUpdateInfos.Add(new PackageUpdateInfos(package, type, update));
             }
 
-            pullRequestsInfos.Add(new PullRequestInfos(prTitle, prLabels, packageUpdateInfos.OrderBy(x => x.Package).ThenBy(x => x.Type).ThenBy(x => x.Update)));
+            pullRequestsInfos.Add(new PullRequestInfos(
+                prTitle!, 
+                prLabels!, 
+                packageUpdateInfos.OrderBy(x => x.Package).ThenBy(x => x.Type).ThenBy(x => x.Update),
+                pullRequest.AutoMerge != null
+                ));
         }
 
         return pullRequestsInfos;
@@ -113,16 +145,16 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
 
     private async Task CleanupRepository()
     {
-        var branches = await gitHubClient.Repository.Branch.GetAll("gsoft-inc", "renovate-config-test");
+        var branches = await gitHubClient.Repos["gsoft-inc"]["renovate-config-test"].Branches.GetAsync() ?? [];
         foreach (var branch in branches)
         {
             outputHelper.WriteLine($"Deleting branch: {branch.Name}");
 
             try
             {
-                await gitHubClient.Git.Reference.Delete("gsoft-inc", "renovate-config-test", $"heads/{branch.Name}");
+                await gitHubClient.Repos["gsoft-inc"]["renovate-config-test"].Git.Refs[$"heads/{branch.Name}"].DeleteAsync();
             }
-            catch (NotFoundException)
+            catch (Exception)
             {
                 // Ignore if it doesn't exist
                 outputHelper.WriteLine($"Deleting branch was not found: {branch.Name}");
@@ -136,7 +168,6 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
 
         if (string.IsNullOrEmpty(token))
         {
-            outputHelper.WriteLine("GitHub token not found from environment variable, running `gh auth login` to authenticate");
             var (stdout, _) = await ExecuteCommand(outputHelper, "gh", ["auth", "token"]);
 
             token = stdout.Trim();
@@ -150,13 +181,19 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
         return token;
     }
 
-    private static async Task<GitHubClient> CreateGitHubClient(ITestOutputHelper outputHelper)
+    private static async Task<GitHubClient> GetGitHubClient(ITestOutputHelper outputHelper)
     {
+        if (_sharedGitHubClient != null)
+        {
+            return _sharedGitHubClient;
+        }
+
         var token = await GetGitHubToken(outputHelper);
+        var tokenProvider = new TokenProvider(token);
+        var adapter = RequestAdapter.Create(new TokenAuthProvider(tokenProvider));
+        _sharedGitHubClient = new GitHubClient(adapter);
 
-        var githubClient = new GitHubClient(new ProductHeaderValue("renovate-test"), new InMemoryCredentialStore(new Octokit.Credentials(token)));
-
-        return githubClient;
+        return _sharedGitHubClient;
     }
 
     private static void CopyRenovateFile(TemporaryDirectory temporaryDirectory)

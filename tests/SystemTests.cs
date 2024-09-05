@@ -33,6 +33,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: mcr.microsoft.com/dotnet/sdk
                   Type: stage
                   Update: patch
+              isAutoMergeEnabled: true
             - Title: chore(deps): update dotnet-sdk  to redacted(major)
               Labels:
                 - renovate
@@ -172,6 +173,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Microsoft.Azure.AppConfiguration.AspNetCore
                   Type: nuget
                   Update: minor
+              isAutoMergeEnabled: true
             - Title: chore(deps): update microsoft (major)
               Labels:
                 - renovate
@@ -182,6 +184,43 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
                   Type: nuget
                   Update: major
+            """);
+    }
+    
+    // Maybe not required
+    [Fact]
+    public async Task RenovateMicrosoftAutomergeDependencies()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddCiFile();
+        
+        testContext.AddFile("CODEOWNERS",
+          """
+          * @gsoft-inc/internal-developer-platform
+          """);
+        
+        testContext.AddFile("project.csproj",
+          """
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="System.Text.Json" Version="8.0.0" />
+          </ItemGroup>
+        </Project>
+        """);
+
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update dependency system.text.json  to redacted[security]
+              Labels:
+                - security
+              PackageUpdatesInfos:
+                - Package: System.Text.Json
+                  Type: nuget
+                  Update: patch
+              isAutoMergeEnabled: true
             """);
     }
 
