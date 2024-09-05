@@ -43,7 +43,7 @@
   ],
   "packageRules": [
     {
-      "description": "Automatically merge PRs for Microsoft minor and patch updates",
+      "description": "Automatically merge minor and patch updates for Microsoft dependencies",
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "matchPackageNames": [
