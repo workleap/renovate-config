@@ -17,7 +17,7 @@ The shared configurations are baselines. Each project is free to set their own r
 }
 ````
 
-# Azure DevOps
+## Azure DevOps
 
 ````json
 {
@@ -64,3 +64,7 @@ steps:
   parameters:
     githubToken: $(GITHUB_COM_TOKEN)
 ````
+
+## Support Auto Merge
+
+TODO: Explain ruleset required.

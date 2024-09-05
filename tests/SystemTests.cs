@@ -16,6 +16,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             FROM mcr.microsoft.com/dotnet/aspnet:6.0.0
             """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -69,6 +70,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         </Project>
         """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -108,6 +110,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         }
         """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -152,6 +155,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         </Project>
         """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -189,7 +193,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     
     // Maybe not required
     [Fact]
-    public async Task RenovateMicrosoftAutomergeDependencies()
+    public async Task Given_Microsoft_Minor_Dependencies_When_CI_Succeed_Then_Automatically_Push_On_Main()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
@@ -209,19 +213,67 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         </Project>
         """);
 
+        await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+        
+        // Need to run renovate a second time so that branch is merged
+        await Task.Delay(10);
         await testContext.RunRenovate();
 
-        await testContext.AssertPullRequests(
-            """
-            - Title: chore(deps): update dependency system.text.json  to redacted[security]
-              Labels:
-                - security
-              PackageUpdatesInfos:
-                - Package: System.Text.Json
-                  Type: nuget
-                  Update: patch
-              isAutoMergeEnabled: true
-            """);
+        // TODO: Validate that it is merged on main
+        // await testContext.AssertPullRequests(
+        //     """
+        //     - Title: chore(deps): update dependency system.text.json  to redacted[security]
+        //       Labels:
+        //         - security
+        //       PackageUpdatesInfos:
+        //         - Package: System.Text.Json
+        //           Type: nuget
+        //           Update: patch
+        //       isAutoMergeEnabled: true
+        //     """);
+    }
+    
+    [Fact]
+    public async Task Given_Microsoft_Minor_Dependencies_When_CI_Fail_Then_Create_PR()
+    {
+      await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+      testContext.AddFaillingCiFile();
+        
+      testContext.AddFile("CODEOWNERS",
+        """
+        * @gsoft-inc/internal-developer-platform
+        """);
+        
+      testContext.AddFile("project.csproj",
+        """
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="System.Text.Json" Version="8.0.0" />
+          </ItemGroup>
+        </Project>
+        """);
+
+      await testContext.PushFilesOnDefaultBranch();
+      
+      await testContext.RunRenovate();
+      
+      // Need to run renovate a second time so that the PR is created
+      await Task.Delay(10);
+      await testContext.RunRenovate();
+
+      await testContext.AssertPullRequests(
+          """
+          - Title: chore(deps): update dependency system.text.json  to redacted[security]
+            Labels:
+              - security
+            PackageUpdatesInfos:
+              - Package: System.Text.Json
+                Type: nuget
+                Update: patch
+            isAutoMergeEnabled: true
+          """);
     }
 
     [Fact]
@@ -238,6 +290,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests("[]");

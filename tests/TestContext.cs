@@ -52,6 +52,9 @@ internal sealed class TestContext(
                 pull_request: 
                     branches:
                         - "*"
+                push:
+                    branches:
+                        - "renovate/**"
                         
             jobs:
                 build:
@@ -62,8 +65,31 @@ internal sealed class TestContext(
             """
             );
     }
-
-    public async Task RunRenovate()
+    
+    public void AddFaillingCiFile()
+    {
+        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml", 
+            """
+            name: CI
+            on:
+                pull_request: 
+                    branches:
+                        - "*"
+                push:
+                    branches:
+                        - "renovate/**"
+                        
+            jobs:
+                build:
+                    runs-on: ubuntu-latest
+                    steps:
+                        - name: Fail step
+                          run: exit 1
+            """
+        );
+    }
+    
+    public async Task PushFilesOnDefaultBranch()
     {
         var token = await GetGitHubToken(outputHelper);
         var gitUrl = $"https://{token}@github.com/gsoft-inc/renovate-config-test";
@@ -73,6 +99,11 @@ internal sealed class TestContext(
         await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "add", "."] );
         await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
         await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "push", gitUrl, DefaultBranchName + ":" + DefaultBranchName, "--force"]);
+    }
+
+    public async Task RunRenovate()
+    {
+        var token = await GetGitHubToken(outputHelper);
 
         await ExecuteCommand(
             outputHelper,
