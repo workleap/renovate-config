@@ -240,7 +240,7 @@ internal sealed class TestContext(
     
     private async Task<CheckResults> GetCommitChecks(string commitSha)
     {
-        var (stdOut, stdError) = await ExecuteCommand( outputHelper,
+        var (stdOut, stdError) = await ExecuteCommand(outputHelper,
             "gh", new[]
             {
                 "api",
@@ -292,7 +292,13 @@ internal sealed class TestContext(
 
     private static async Task<string> GetGitHubToken(ITestOutputHelper outputHelper)
     {
-        var token = Environment.GetEnvironmentVariable("GH_GITHUB_TOKEN");
+        var token = Environment.GetEnvironmentVariable("TEST_GITHUB_TOKEN");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            // gh auth Login with token using echo
+            var (stdout, stdError) = await ExecuteCommand(outputHelper, "echo", [$"{token}", "|", "gh", "auth", "login", "--with-token"]);
+        }
 
         if (string.IsNullOrEmpty(token))
         {
@@ -308,7 +314,7 @@ internal sealed class TestContext(
 
         return token;
     }
-
+    
     private static async Task<GitHubClient> GetGitHubClient(ITestOutputHelper outputHelper)
     {
         if (_sharedGitHubClient != null)
