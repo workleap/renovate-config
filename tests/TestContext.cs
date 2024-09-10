@@ -1,11 +1,15 @@
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CliWrap;
 using GitHub;
 using GitHub.Models;
 using GitHub.Octokit.Client;
 using GitHub.Octokit.Client.Authentication;
+using GitHub.Repos.Item.Item.CheckRuns;
+using GitHub.Repos.Item.Item.Commits.Item.CheckRuns;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
@@ -23,6 +27,8 @@ internal sealed class TestContext(
     private static GitHubClient? _sharedGitHubClient;
     
     private const string DefaultBranchName = "main";
+    private const string RepositoryOwner = "gsoft-inc";
+    private const string RepositoryName = "renovate-config-test";
     private readonly string _repoPath = temporaryDirectory.FullPath;
 
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
@@ -61,7 +67,7 @@ internal sealed class TestContext(
                     runs-on: ubuntu-latest
                     steps:
                         - name: Sleep
-                          run: sleep 10
+                          run: sleep 1
             """
             );
     }
@@ -134,10 +140,21 @@ internal sealed class TestContext(
             .Validate(pullRequests, expected, filePath, lineNumber);
         // ReSharper restore ExplicitCallerInfoArgument
     }
+    
+    [InlineSnapshotAssertion(nameof(expected))]
+    public async Task AssertCommits(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    {
+        var commits = await GetCommits();
+        InlineSnapshot
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
+            // ReSharper disable ExplicitCallerInfoArgument
+            .Validate(commits, expected, filePath, lineNumber);
+        // ReSharper restore ExplicitCallerInfoArgument
+    }
 
     public async Task<IEnumerable<PullRequestInfos>>  GetPullRequests()
     {
-        var pullRequests = await gitHubClient.Repos["gsoft-inc"]["renovate-config-test"].Pulls.GetAsync() ?? [];
+        var pullRequests = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Pulls.GetAsync() ?? [];
 
         var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
@@ -173,17 +190,95 @@ internal sealed class TestContext(
 
         return pullRequestsInfos;
     }
+    
+    public async Task<IEnumerable<CommitInfo>> GetCommits()
+    {
+        var commits = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Commits.GetAsync() ?? [];
+        
+        var commitInfos = new List<CommitInfo>(commits.Count);
+
+        foreach (var commit in commits)
+        {
+            var message = commit.CommitProp!.Message ?? string.Empty;
+            
+            commitInfos.Add(new CommitInfo(message));
+        }
+        
+        return commitInfos;
+    }
+    
+    public async Task WaitForLatestCommitChecksToSucceed()
+    {
+        var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
+
+        foreach (var branch in branches)
+        {
+            await WaitForCommitChecksToSucceed(branch.Commit!.Sha!);
+        }
+    }
+    
+    private async Task WaitForCommitChecksToSucceed(string commitSha)
+    {
+        var isCommitStatusCompleted = false;
+
+        do
+        {
+            var commitChecks = await GetCommitChecks(commitSha);
+            
+            isCommitStatusCompleted = 
+                commitChecks.CheckRuns.Any() &&
+                commitChecks!.CheckRuns!.All(x => string.Equals(x.Status, CheckRun_status.Completed.ToString(), StringComparison.OrdinalIgnoreCase));
+            
+            if (!isCommitStatusCompleted)
+            {
+                await Task.Delay(1000);
+            }   
+        } while (!isCommitStatusCompleted);
+    }
+    
+    private async Task<CheckResults> GetCommitChecks(string commitSha)
+    {
+        var (stdOut, stdError) = await ExecuteCommand( outputHelper,
+            "gh", new[]
+            {
+                "api",
+                $"/repos/{RepositoryOwner}/{RepositoryName}/commits/{commitSha}/check-runs"
+            });
+
+        if (!string.IsNullOrEmpty(stdError))
+        {
+            throw new Exception($"Error fetching check runs: {stdError}");
+        }
+
+        return JsonSerializer.Deserialize<CheckResults>(stdOut.ToString()) ?? new CheckResults();
+    }
+    
+
+    private class CheckResults
+    {
+        [JsonPropertyName("check_runs")]
+        public List<CheckRun> CheckRuns { get; set; } = null!;
+    }
+
+    private class CheckRun
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = null!;
+
+        [JsonPropertyName("status")]
+        public string Status { get; set; }
+    }
 
     private async Task CleanupRepository()
     {
-        var branches = await gitHubClient.Repos["gsoft-inc"]["renovate-config-test"].Branches.GetAsync() ?? [];
+        var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
         foreach (var branch in branches)
         {
             outputHelper.WriteLine($"Deleting branch: {branch.Name}");
 
             try
             {
-                await gitHubClient.Repos["gsoft-inc"]["renovate-config-test"].Git.Refs[$"heads/{branch.Name}"].DeleteAsync();
+                await gitHubClient.Repos[RepositoryOwner][RepositoryName].Git.Refs[$"heads/{branch.Name}"].DeleteAsync();
             }
             catch (Exception)
             {

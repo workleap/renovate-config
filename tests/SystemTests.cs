@@ -167,17 +167,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: System.Text.Json
                   Type: nuget
                   Update: major
-            - Title: chore(deps): update microsoft
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
-                  Type: nuget
-                  Update: patch
-                - Package: Microsoft.Azure.AppConfiguration.AspNetCore
-                  Type: nuget
-                  Update: minor
-              isAutoMergeEnabled: true
             - Title: chore(deps): update microsoft (major)
               Labels:
                 - renovate
@@ -191,7 +180,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """);
     }
     
-    // Maybe not required
     [Fact]
     public async Task Given_Microsoft_Minor_Dependencies_When_CI_Succeed_Then_Automatically_Push_On_Main()
     {
@@ -217,23 +205,17 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.RunRenovate();
         
         // Need to run renovate a second time so that branch is merged
-        await Task.Delay(10);
+        // Need to pull commit status to see is check is completed
+        await testContext.WaitForLatestCommitChecksToSucceed();
         await testContext.RunRenovate();
 
-        // TODO: Validate that it is merged on main
-        // await testContext.AssertPullRequests(
-        //     """
-        //     - Title: chore(deps): update dependency system.text.json  to redacted[security]
-        //       Labels:
-        //         - security
-        //       PackageUpdatesInfos:
-        //         - Package: System.Text.Json
-        //           Type: nuget
-        //           Update: patch
-        //       isAutoMergeEnabled: true
-        //     """);
+        await testContext.AssertCommits("""
+            - Message: chore(deps): update dependency system.text.json  to redacted[security]
+            - Message: IDP ScaffoldIt automated test
+            """);
     }
     
+    // Will fail locally since it use the developer user which have push permission on main
     [Fact]
     public async Task Given_Microsoft_Minor_Dependencies_When_CI_Fail_Then_Create_PR()
     {
