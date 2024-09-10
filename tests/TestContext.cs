@@ -34,6 +34,8 @@ internal sealed class TestContext(
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
     {
         var gitHubClient = await GetGitHubClient(outputHelper);
+        
+        await ExecuteCommand(outputHelper, "gh", ["auth", "status"]);
 
         var temporaryDirectory = TemporaryDirectory.Create();
         var repoPath = temporaryDirectory.FullPath;
