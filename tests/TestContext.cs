@@ -292,14 +292,8 @@ internal sealed class TestContext(
 
     private static async Task<string> GetGitHubToken(ITestOutputHelper outputHelper)
     {
-        var token = Environment.GetEnvironmentVariable("TEST_GITHUB_TOKEN");
-
-        if (string.IsNullOrEmpty(token))
-        {
-            // gh auth Login with token using echo
-            var (stdout, stdError) = await ExecuteCommand(outputHelper, "echo", [$"{token}", "|", "gh", "auth", "login", "--with-token"]);
-        }
-
+        var token = Environment.GetEnvironmentVariable("GH_TOKEN");
+        
         if (string.IsNullOrEmpty(token))
         {
             var (stdout, _) = await ExecuteCommand(outputHelper, "gh", ["auth", "token"]);
