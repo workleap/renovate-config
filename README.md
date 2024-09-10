@@ -4,9 +4,9 @@ This repository contains the shared renovate configurations.
 
 The shared configurations are baselines. Each project is free to set their own rules on top of this configuration.
 
-# Usage
+## Usage
 
-## GitHub projects
+### GitHub projects
 
 ````json
 {
@@ -17,7 +17,17 @@ The shared configurations are baselines. Each project is free to set their own r
 }
 ````
 
-## Azure DevOps
+#### Enabling Auto-Merge Functionality for GitHub
+
+Auto-merge has been set up using the [branch approach](https://docs.renovatebot.com/key-concepts/automerge/#branch-vs-pr-automerging), chosen to minimize noise and allow for the bypassing of PR review requirements.
+
+For those utilizing branch protection rules on the default branch, specific adjustments are necessary to facilitate auto-merge capabilities for GitHub:
+
+1. **Update Branch Policies**: Modify your branch protection settings to permit the account or service running Renovate to bypass pull request review requirements.
+
+2. **Handling Status Checks**: If your repository enforces "Require status checks to pass before merging," be aware that Renovate will be unable to merge changes into the main branch if any of these checks fail. It will fallback to create a PR.
+
+### Azure DevOps
 
 ````json
 {
@@ -64,7 +74,3 @@ steps:
   parameters:
     githubToken: $(GITHUB_COM_TOKEN)
 ````
-
-## Support Auto Merge
-
-TODO: Explain ruleset required.
