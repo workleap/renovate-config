@@ -43,7 +43,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """);
         
         await testContext.AssertCommits("""
-            - Message: chore(deps): update dependency system.text.json  to redacted[security]
+            - Message: chore(deps): update dotnet-sdk
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -154,6 +154,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
+        
+        // Need to run renovate a second time so that branch is merged
+        // Need to pull commit status to see is check is completed
+        await testContext.WaitForLatestCommitChecksToSucceed();
+        await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
             """
@@ -174,6 +179,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
                   Type: nuget
                   Update: major
+            """);
+        
+        await testContext.AssertCommits("""
+            - Message: chore(deps): update microsoft
+            - Message: IDP ScaffoldIt automated test
             """);
     }
     
