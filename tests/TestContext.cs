@@ -158,7 +158,7 @@ internal sealed class TestContext(
         // ReSharper restore ExplicitCallerInfoArgument
     }
 
-    public async Task<IEnumerable<PullRequestInfos>>  GetPullRequests()
+    public async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
     {
         var pullRequests = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Pulls.GetAsync() ?? [];
 
