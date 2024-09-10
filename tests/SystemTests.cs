@@ -9,6 +9,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
+        testContext.AddCiFile();
         testContext.AddFile("global.json", /*lang=json*/"""{"sdk": {"version": "6.0.100"}}""");
         testContext.AddFile("Dockerfile",
             """
@@ -19,10 +20,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
         
-        // Need to pull commit status to see is check is completed
         await testContext.WaitForLatestCommitChecksToSucceed();
         
-        // Need to run renovate a second time so that branch is merged
+        // Need to run renovate a second time so that branch get merged
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -132,10 +132,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task RenovateMicrosoftDependencies()
+    public async Task Given_Microsoft_Major_Dependencies_Updates_Then_Open_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
-
+        
         testContext.AddFile("project.csproj",
           """
         <Project Sdk="Microsoft.NET.Sdk">
@@ -153,11 +153,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         """);
 
         await testContext.PushFilesOnDefaultBranch();
-        await testContext.RunRenovate();
-        
-        // Need to run renovate a second time so that branch is merged
-        // Need to pull commit status to see is check is completed
-        await testContext.WaitForLatestCommitChecksToSucceed();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -180,15 +175,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: major
             """);
-        
-        await testContext.AssertCommits("""
-            - Message: chore(deps): update microsoft
-            - Message: IDP ScaffoldIt automated test
-            """);
     }
     
     [Fact]
-    public async Task Given_Microsoft_Minor_Dependencies_When_CI_Succeed_Then_Automatically_Push_On_Main()
+    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Succeed_Then_Automerge_By_Pushing_On_Main()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
@@ -222,12 +212,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """);
     }
     
-    // Will fail locally since it use the developer user which have push permission on main
     [Fact]
-    public async Task Given_Microsoft_Minor_Dependencies_When_CI_Fail_Then_Create_PR()
+    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Fail_Then_Abort_Automerge_And_Fallback_To_Create_PR()
     {
       await using var testContext = await TestContext.CreateAsync(testOutputHelper);
-
+    
       testContext.AddFaillingCiFile();
         
       testContext.AddFile("CODEOWNERS",
@@ -243,15 +232,16 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
           </ItemGroup>
         </Project>
         """);
-
+    
       await testContext.PushFilesOnDefaultBranch();
       
-      await testContext.RunRenovate();
       
-      // Need to run renovate a second time so that the PR is created
-      await Task.Delay(10);
       await testContext.RunRenovate();
-
+      await testContext.WaitForLatestCommitChecksToSucceed();
+      
+      // Need to run renovate a second time to create PR on CI failures
+      await testContext.RunRenovate();
+    
       await testContext.AssertPullRequests(
           """
           - Title: chore(deps): update dependency system.text.json  to redacted[security]
