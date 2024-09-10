@@ -178,7 +178,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
     
     [Fact]
-    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Succeed_Then_Automerge_By_Pushing_On_Main()
+    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Succeed_Then_AutoMerge_By_Pushing_On_Main()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
@@ -213,7 +213,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
     
     [Fact]
-    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Fail_Then_Abort_Automerge_And_Fallback_To_Create_PR()
+    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Fail_Then_Abort_AutoMerge_And_Fallback_To_Create_PR()
     {
       await using var testContext = await TestContext.CreateAsync(testOutputHelper);
     

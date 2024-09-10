@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CliWrap;
-using GitHub;
 using GitHub.Models;
 using GitHub.Octokit.Client;
 using GitHub.Octokit.Client.Authentication;
@@ -15,14 +14,18 @@ using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Meziantou.Framework;
 using Meziantou.Framework.InlineSnapshotTesting;
+using Octokit;
+using Octokit.Internal;
 using Xunit.Abstractions;
+using GitHubClient = GitHub.GitHubClient;
 
 namespace renovate_config.tests;
 
 internal sealed class TestContext(
     ITestOutputHelper outputHelper,
     TemporaryDirectory temporaryDirectory,
-    GitHubClient gitHubClient): IAsyncDisposable
+    GitHubClient gitHubClient,
+    Octokit.GitHubClient legacyGitHubClient): IAsyncDisposable
 {
     private static GitHubClient? _sharedGitHubClient;
     
@@ -34,6 +37,7 @@ internal sealed class TestContext(
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
     {
         var gitHubClient = await GetGitHubClient(outputHelper);
+        var legacyGitHubClient = await GetLegacyGitHubClient(outputHelper);
         
         await ExecuteCommand(outputHelper, "gh", ["auth", "status"]);
 
@@ -43,7 +47,7 @@ internal sealed class TestContext(
 
         CopyRenovateFile(temporaryDirectory);
 
-        return new TestContext(outputHelper, temporaryDirectory, gitHubClient);
+        return new TestContext(outputHelper, temporaryDirectory, gitHubClient, legacyGitHubClient);
     }
 
     public void AddFile(string path, string content)
@@ -215,21 +219,27 @@ internal sealed class TestContext(
 
         foreach (var branch in branches)
         {
-            await WaitForCommitChecksToSucceed(branch.Commit!.Sha!);
+            if (!string.Equals(branch.Name, DefaultBranchName))
+            {
+                await WaitForCommitAssociatedWorkflowsToSucceed(branch.Commit!.Sha!);
+            }
         }
     }
     
-    private async Task WaitForCommitChecksToSucceed(string commitSha)
+    // Can't uses commit checks directly since fined grained permission token does not support checks scopes
+    // Related issue: https://github.com/cli/cli/issues/8842
+    private async Task WaitForCommitAssociatedWorkflowsToSucceed(string commitSha)
     {
         var isCommitStatusCompleted = false;
 
         do
         {
-            var commitChecks = await GetCommitChecks(commitSha);
+            var workflows = await legacyGitHubClient.Actions.Workflows.Runs.List(RepositoryOwner, RepositoryName,
+                new WorkflowRunsRequest() { HeadSha = commitSha });
             
             isCommitStatusCompleted = 
-                commitChecks.CheckRuns.Any() &&
-                commitChecks!.CheckRuns!.All(x => string.Equals(x.Status, CheckRun_status.Completed.ToString(), StringComparison.OrdinalIgnoreCase));
+                workflows.WorkflowRuns.Any() &&
+                workflows.WorkflowRuns!.All(x => x.Status == WorkflowRunStatus.Completed);
             
             if (!isCommitStatusCompleted)
             {
@@ -238,39 +248,6 @@ internal sealed class TestContext(
         } while (!isCommitStatusCompleted);
     }
     
-    private async Task<CheckResults> GetCommitChecks(string commitSha)
-    {
-        var (stdOut, stdError) = await ExecuteCommand(outputHelper,
-            "gh", new[]
-            {
-                "api",
-                $"/repos/{RepositoryOwner}/{RepositoryName}/commits/{commitSha}/check-runs"
-            });
-
-        if (!string.IsNullOrEmpty(stdError))
-        {
-            throw new Exception($"Error fetching check runs: {stdError}");
-        }
-
-        return JsonSerializer.Deserialize<CheckResults>(stdOut.ToString()) ?? new CheckResults();
-    }
-    
-
-    private class CheckResults
-    {
-        [JsonPropertyName("check_runs")]
-        public List<CheckRun> CheckRuns { get; set; } = null!;
-    }
-
-    private class CheckRun
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; } = null!;
-
-        [JsonPropertyName("status")]
-        public string Status { get; set; }
-    }
-
     private async Task CleanupRepository()
     {
         var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
@@ -307,6 +284,15 @@ internal sealed class TestContext(
         }
 
         return token;
+    }
+    
+    private static async Task<Octokit.GitHubClient> GetLegacyGitHubClient(ITestOutputHelper outputHelper)
+    {
+        var token = await GetGitHubToken(outputHelper);
+        
+        var githubClient = new Octokit.GitHubClient(new ProductHeaderValue("renovate-test"), new InMemoryCredentialStore(new Octokit.Credentials(token)));
+        
+        return githubClient;
     }
     
     private static async Task<GitHubClient> GetGitHubClient(ITestOutputHelper outputHelper)

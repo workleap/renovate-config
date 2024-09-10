@@ -18,4 +18,4 @@ jobs:
       - name: Test with the dotnet CLI
         run: dotnet test tests 
         env:
-          GH_TOKEN: ${{secrets.TEST_GITHUB_TOKEN}}
+          GH_TOKEN: ${{secrets.TEST_GITHUB_MG}}
