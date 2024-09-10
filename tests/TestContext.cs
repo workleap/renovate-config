@@ -219,7 +219,7 @@ internal sealed class TestContext(
 
         foreach (var branch in branches)
         {
-            if (!string.Equals(branch.Name, DefaultBranchName))
+            if (branch.Name != DefaultBranchName)
             {
                 await WaitForCommitAssociatedWorkflowsToSucceed(branch.Commit!.Sha!);
             }
