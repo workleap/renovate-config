@@ -43,6 +43,21 @@
   ],
   "packageRules": [
     {
+      "description": "Automatically merge minor and patch updates for Microsoft dependencies",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "branch",
+      "matchPackageNames": [
+        "dotnet-sdk",
+        "mcr.microsoft.com/dotnet/sdk",
+        "mcr.microsoft.com/dotnet/aspnet",
+        "mcr.microsoft.com/dotnet/runtime",
+        "mcr.microsoft.com/dotnet/runtime-deps",
+        "/^[mM]icrosoft\\./",
+        "/^[sS]ystem\\./"
+      ]
+    },
+    {
       "groupName": "gitversion-msbuild",
       "description": "Disable major updates as their are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
       "matchPackageNames": [

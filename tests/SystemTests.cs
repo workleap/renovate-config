@@ -9,6 +9,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
+        testContext.AddCiFile();
         testContext.AddFile("global.json", /*lang=json*/"""{"sdk": {"version": "6.0.100"}}""");
         testContext.AddFile("Dockerfile",
             """
@@ -16,23 +17,16 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             FROM mcr.microsoft.com/dotnet/aspnet:6.0.0
             """);
 
+        await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+        
+        await testContext.WaitForLatestCommitChecksToSucceed();
+        
+        // Need to run renovate a second time so that branch get merged
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dotnet-sdk
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: dotnet-sdk
-                  Type: dotnet-sdk
-                  Update: patch
-                - Package: mcr.microsoft.com/dotnet/aspnet
-                  Type: final
-                  Update: patch
-                - Package: mcr.microsoft.com/dotnet/sdk
-                  Type: stage
-                  Update: patch
             - Title: chore(deps): update dotnet-sdk  to redacted(major)
               Labels:
                 - renovate
@@ -46,6 +40,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: mcr.microsoft.com/dotnet/sdk
                   Type: stage
                   Update: major
+            """);
+        
+        await testContext.AssertCommits("""
+            - Message: chore(deps): update dotnet-sdk
+            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -68,6 +67,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         </Project>
         """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -107,6 +107,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         }
         """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -131,10 +132,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task RenovateMicrosoftDependencies()
+    public async Task Given_Microsoft_Major_Dependencies_Updates_Then_Open_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
-
+        
         testContext.AddFile("project.csproj",
           """
         <Project Sdk="Microsoft.NET.Sdk">
@@ -151,6 +152,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         </Project>
         """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -162,16 +164,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: System.Text.Json
                   Type: nuget
                   Update: major
-            - Title: chore(deps): update microsoft
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
-                  Type: nuget
-                  Update: patch
-                - Package: Microsoft.Azure.AppConfiguration.AspNetCore
-                  Type: nuget
-                  Update: minor
             - Title: chore(deps): update microsoft (major)
               Labels:
                 - renovate
@@ -183,6 +175,84 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: major
             """);
+    }
+    
+    [Fact]
+    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Succeed_Then_AutoMerge_By_Pushing_On_Main()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddCiFile();
+        
+        testContext.AddFile("CODEOWNERS",
+          """
+          * @gsoft-inc/internal-developer-platform
+          """);
+        
+        testContext.AddFile("project.csproj",
+          """
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="System.Text.Json" Version="8.0.0" />
+          </ItemGroup>
+        </Project>
+        """);
+
+        await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+        
+        // Need to run renovate a second time so that branch is merged
+        // Need to pull commit status to see is check is completed
+        await testContext.WaitForLatestCommitChecksToSucceed();
+        await testContext.RunRenovate();
+
+        await testContext.AssertCommits("""
+            - Message: chore(deps): update dependency system.text.json  to redacted[security]
+            - Message: IDP ScaffoldIt automated test
+            """);
+    }
+    
+    [Fact]
+    public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Fail_Then_Abort_AutoMerge_And_Fallback_To_Create_PR()
+    {
+      await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+    
+      testContext.AddFaillingCiFile();
+        
+      testContext.AddFile("CODEOWNERS",
+        """
+        * @gsoft-inc/internal-developer-platform
+        """);
+        
+      testContext.AddFile("project.csproj",
+        """
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="System.Text.Json" Version="8.0.0" />
+          </ItemGroup>
+        </Project>
+        """);
+    
+      await testContext.PushFilesOnDefaultBranch();
+      
+      
+      await testContext.RunRenovate();
+      await testContext.WaitForLatestCommitChecksToSucceed();
+      
+      // Need to run renovate a second time to create PR on CI failures
+      await testContext.RunRenovate();
+    
+      await testContext.AssertPullRequests(
+          """
+          - Title: chore(deps): update dependency system.text.json  to redacted[security]
+            Labels:
+              - security
+            PackageUpdatesInfos:
+              - Package: System.Text.Json
+                Type: nuget
+                Update: patch
+            isAutoMergeEnabled: true
+          """);
     }
 
     [Fact]
@@ -199,6 +269,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
+        await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests("[]");
