@@ -292,7 +292,7 @@ internal sealed class TestContext(
 
     private static async Task<string> GetGitHubToken(ITestOutputHelper outputHelper)
     {
-        var token = Environment.GetEnvironmentVariable("TEST_GITHUB_TOKEN");
+        var token = Environment.GetEnvironmentVariable("GH_GITHUB_TOKEN");
 
         if (string.IsNullOrEmpty(token))
         {

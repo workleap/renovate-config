@@ -18,23 +18,15 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
+        
+        // Need to pull commit status to see is check is completed
+        await testContext.WaitForLatestCommitChecksToSucceed();
+        
+        // Need to run renovate a second time so that branch is merged
+        await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dotnet-sdk
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: dotnet-sdk
-                  Type: dotnet-sdk
-                  Update: patch
-                - Package: mcr.microsoft.com/dotnet/aspnet
-                  Type: final
-                  Update: patch
-                - Package: mcr.microsoft.com/dotnet/sdk
-                  Type: stage
-                  Update: patch
-              isAutoMergeEnabled: true
             - Title: chore(deps): update dotnet-sdk  to redacted(major)
               Labels:
                 - renovate
@@ -48,6 +40,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: mcr.microsoft.com/dotnet/sdk
                   Type: stage
                   Update: major
+            """);
+        
+        await testContext.AssertCommits("""
+            - Message: chore(deps): update dependency system.text.json  to redacted[security]
+            - Message: IDP ScaffoldIt automated test
             """);
     }
 
