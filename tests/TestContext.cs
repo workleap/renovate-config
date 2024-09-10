@@ -170,7 +170,7 @@ internal sealed class TestContext(
         {
             MarkdownDocument markdownDocument = Markdown.Parse(pullRequest.Body!, pipeline);
             var prTitle = pullRequest.Title;
-            var prLabels = pullRequest.Labels!.Select(x => x.Name).Order();
+            var prLabels = pullRequest.Labels?.Select(x => x.Name).Order();
 
             var table = markdownDocument.OfType<Table>().First();
             var rows = table.Skip(1).OfType<TableRow>().ToArray();
