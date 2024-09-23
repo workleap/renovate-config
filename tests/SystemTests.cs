@@ -89,6 +89,43 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
+    public async Task RenovateMongoDependencies()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddFile("project.csproj",
+          /*lang=xml*/"""
+          <Project Sdk="Microsoft.NET.Sdk">
+            <ItemGroup>
+              <PackageReference Include="MongoDB.Bson" Version="2.28.0" />
+              <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
+              <PackageReference Include="MongoDB.Driver.Core" Version="2.28.0" />
+            </ItemGroup>
+          </Project>
+          """);
+
+        await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+          """
+            - Title: chore(deps): update mongodb monorepo
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: MongoDB.Bson
+                  Type: nuget
+                  Update: minor
+                - Package: MongoDB.Driver
+                  Type: nuget
+                  Update: minor
+                - Package: MongoDB.Driver.Core
+                  Type: nuget
+                  Update: minor
+            """);
+    }
+
+    [Fact]
     public async Task RenovatePackageJsonDependencies()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
@@ -176,7 +213,62 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Update: major
             """);
     }
-    
+
+    [Fact]
+    public async Task Given_Microsoft_And_Workleap_Dependencies_Updates_Then_Open_Multiple_PRs()
+    {
+      await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+      testContext.AddFile("project.csproj",
+        /*lang=xml*/"""
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+            <PackageReference Include="MongoDB.Bson" Version="2.28.0" />
+            <PackageReference Include="Workleap.Extensions.Configuration.Substitution" Version="1.1.2" />
+          </ItemGroup>
+        </Project>
+        """);
+
+      testContext.AddFile("package.json",
+        /*lang=json*/"""
+        {
+          "dependencies": {
+            "@squide/core": "5.2.0"
+          }
+        }
+        """);
+
+      await testContext.PushFilesOnDefaultBranch();
+      await testContext.RunRenovate();
+
+      await testContext.AssertPullRequests(
+        """
+          - Title: chore(deps): update dependency system.text.json  to redacted[security]
+            Labels:
+              - security
+            PackageUpdatesInfos:
+              - Package: System.Text.Json
+                Type: nuget
+                Update: major
+          - Title: chore(deps): update microsoft (major)
+            Labels:
+              - renovate
+            PackageUpdatesInfos:
+              - Package: Microsoft.ApplicationInsights.AspNetCore
+                Type: nuget
+                Update: major
+              - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
+                Type: nuget
+                Update: major
+          - Title: chore(deps): update workleap (major)
+            Labels:
+              - renovate
+            PackageUpdatesInfos:
+              -
+        """);
+    }
+
     [Fact]
     public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Succeed_Then_AutoMerge_By_Pushing_On_Main()
     {
