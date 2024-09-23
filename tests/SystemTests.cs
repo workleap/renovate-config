@@ -5,12 +5,14 @@ namespace renovate_config.tests;
 public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 {
     [Fact]
-    public async Task RenovateDotnetSdkDependencies()
+    public async Task Given_DotNetSdk_Updates_In_Various_Files_Then_AutoMerges_Minor_Udates_And_Opens_Major_PRs()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-        testContext.AddCiFile();
+        testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
+
         testContext.AddFile("global.json", /*lang=json*/"""{"sdk": {"version": "6.0.100"}}""");
+
         testContext.AddFile("Dockerfile",
             """
             FROM mcr.microsoft.com/dotnet/sdk:6.0.100
@@ -20,9 +22,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
 
-        await testContext.WaitForLatestCommitChecksToSucceed();
-
-        // Need to run renovate a second time so that branch get merged
+        // Need to run renovate a second time so that branch is merged
+        await testContext.WaitForBranchPolicyChecksToSucceed();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -50,7 +51,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task RenovateHangfireDependencies()
+    public async Task Given_Hangfire_Updates_Then_Groups_Them_In_Single_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
@@ -95,9 +96,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task RenovateMongoDependencies()
+    public async Task Given_MongoDB_Updates_Then_AutoMerges_Minor_Updates_In_Single_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddFile("project.csproj",
             /*lang=xml*/"""
@@ -114,19 +117,18 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
-        // Need to pull commit status to see is check is completed
-        await testContext.WaitForLatestCommitChecksToSucceed();
+        await testContext.WaitForBranchPolicyChecksToSucceed();
         await testContext.RunRenovate();
 
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update dependency system.text.json to redacted[security]
+            - Message: chore(deps): update mongodb monorepo to redacted
             - Message: IDP ScaffoldIt automated test
             """);
     }
 
     [Fact]
-    public async Task RenovatePackageJsonDependencies()
+    public async Task Given_Ranged_Npm_Dependencies_Then_Pins_Them_In_Single_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
@@ -169,9 +171,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task Given_Microsoft_Major_Dependencies_Updates_Then_Open_PR()
+    public async Task Given_Microsoft_Dependencies_Updates_Then_Opens_Major_PR_And_AutoMerges_Minor()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddFile("project.csproj",
             /*lang=xml*/"""
@@ -190,6 +194,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """);
 
         await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+
+        // Need to run renovate a second time so that branch is merged
+        // Need to pull commit status to see is check is completed
+        await testContext.WaitForBranchPolicyChecksToSucceed();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -212,12 +221,20 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: major
             """);
+
+        await testContext.AssertCommits(
+            """
+            - Message: chore(deps): update microsoft
+            - Message: IDP ScaffoldIt automated test
+            """);
     }
 
     [Fact]
-    public async Task Given_Various_Dependencies_Updates_Then_Open_Multiple_PRs_And_AutoMerge_Microsoft_Only()
+    public async Task Given_Various_Dependencies_Updates_Then_Opens_Multiple_PRs_And_AutoMerges_Microsoft_Minor_Update()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddFile("project.csproj",
             /*lang=xml*/"""
@@ -240,6 +257,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """);
 
         await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+
+        // Need to run renovate a second time so that branch is merged
+        // Need to pull commit status to see is check is completed
+        await testContext.WaitForBranchPolicyChecksToSucceed();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -267,14 +289,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Update: minor
             """);
 
-        // Need to run renovate a second time so that branch is merged
-        // Need to pull commit status to see is check is completed
-        await testContext.WaitForLatestCommitChecksToSucceed();
-        await testContext.RunRenovate();
-
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update dependency system.text.json to redacted[security]
+            - Message: chore(deps): update dependency microsoft.extensions.logging.abstractions to redacted
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -284,7 +301,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-        testContext.AddCiFile();
+        testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
@@ -302,7 +319,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         // Need to run renovate a second time so that branch is merged
         // Need to pull commit status to see is check is completed
-        await testContext.WaitForLatestCommitChecksToSucceed();
+        await testContext.WaitForBranchPolicyChecksToSucceed();
         await testContext.RunRenovate();
 
         await testContext.AssertCommits(
@@ -317,7 +334,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-        testContext.AddFaillingCiFile();
+        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
@@ -333,7 +350,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.PushFilesOnDefaultBranch();
 
         await testContext.RunRenovate();
-        await testContext.WaitForLatestCommitChecksToSucceed();
+        await testContext.WaitForBranchPolicyChecksToSucceed();
 
         // Need to run renovate a second time to create PR on CI failures
         await testContext.RunRenovate();
@@ -352,7 +369,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task DisableGitVersionMsBuildPackage()
+    public async Task Given_GitVersion_Major_Update_Only_Then_Nothing_Happens_As_GitVersion_Major_Update_Is_Disabled()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 

@@ -58,7 +58,7 @@ internal sealed class TestContext(
             """);
     }
 
-    public void AddCiFile()
+    public void AddSuccessfulWorkflowFileToSatisfyBranchPolicy()
     {
         temporaryDirectory.CreateTextFile(".github/workflows/ci.yml",
             /*lang=yaml*/"""
@@ -75,13 +75,13 @@ internal sealed class TestContext(
                 build:
                     runs-on: ubuntu-latest
                     steps:
-                        - name: Sleep
+                        - name: Dummy successful step
                           run: sleep 1
             """
             );
     }
 
-    public void AddFaillingCiFile()
+    public void AddFailingWorklowFileToSatisfyBranchPolicy()
     {
         temporaryDirectory.CreateTextFile(".github/workflows/ci.yml",
             /*lang=yaml*/"""
@@ -98,7 +98,7 @@ internal sealed class TestContext(
                 build:
                     runs-on: ubuntu-latest
                     steps:
-                        - name: Fail step
+                        - name: Dummy failing step
                           run: exit 1
             """
         );
@@ -214,7 +214,7 @@ internal sealed class TestContext(
         return commitInfos;
     }
 
-    public async Task WaitForLatestCommitChecksToSucceed()
+    public async Task WaitForBranchPolicyChecksToSucceed()
     {
         var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
 
