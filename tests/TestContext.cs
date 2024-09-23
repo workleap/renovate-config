@@ -50,6 +50,14 @@ internal sealed class TestContext(
         temporaryDirectory.CreateTextFile(path, content);
     }
 
+    public void AddInternalDeveloperPlatformCodeOwnersFile()
+    {
+        temporaryDirectory.CreateTextFile("CODEOWNERS",
+            """
+            * @gsoft-inc/internal-developer-platform
+            """);
+    }
+
     public void AddCiFile()
     {
         temporaryDirectory.CreateTextFile(".github/workflows/ci.yml",

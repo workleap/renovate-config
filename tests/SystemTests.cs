@@ -58,12 +58,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             /*lang=xml*/"""
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
-                <PackageReference Include="Hangfire" Version="1.7.0" />
-                <PackageReference Include="Hangfire.Core" Version="1.7.0" />
-                <PackageReference Include="Hangfire.NetCore" Version="1.7.0" />
-                <PackageReference Include="Hangfire.Pro" Version="2.3.2" />
-                <PackageReference Include="Hangfire.Pro.Redis" Version="2.3.2" />
-                <PackageReference Include="Hangfire.Throttling" Version="1.1.1" />
+                <PackageReference Include="Hangfire" Version="1.7.1" />
+                <PackageReference Include="Hangfire.AspNetCore" Version="1.7.1" />
+                <PackageReference Include="Hangfire.Core" Version="1.7.1" />
+                <PackageReference Include="Hangfire.NetCore" Version="1.7.1" />
+                <PackageReference Include="Hangfire.SqlServer" Version="1.7.1" />
               </ItemGroup>
             </Project>
             """);
@@ -73,17 +72,23 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update hangfire monorepo
+            - Title: chore(deps): update hangfire monorepo to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Hangfire
                   Type: nuget
                   Update: minor
+                - Package: Hangfire.AspNetCore
+                  Type: nuget
+                  Update: minor
                 - Package: Hangfire.Core
                   Type: nuget
                   Update: minor
-                - Package: Hangfire.Pro.Redis
+                - Package: Hangfire.NetCore
+                  Type: nuget
+                  Update: minor
+                - Package: Hangfire.SqlServer
                   Type: nuget
                   Update: minor
             """);
@@ -101,34 +106,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 <PackageReference Include="MongoDB.Bson" Version="2.27.0" />
                 <PackageReference Include="MongoDB.Driver" Version="2.27.0" />
                 <PackageReference Include="MongoDB.Driver.Core" Version="2.27.0" />
-              </ItemGroup>
-            </Project>
-            """);
-
-        await testContext.PushFilesOnDefaultBranch();
-        await testContext.RunRenovate();
-
-        await testContext.AssertPullRequests(
-            "[]");
-    }
-
-    [Fact]
-    public async Task Given_MongoDB_Minor_Dependencies_Update_When_CI_Succeed_Then_AutoMerge_By_Pushing_On_Main()
-    {
-        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
-
-        testContext.AddCiFile();
-
-        testContext.AddFile("CODEOWNERS",
-            """
-            * @gsoft-inc/internal-developer-platform
-            """);
-
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
-            <Project Sdk="Microsoft.NET.Sdk">
-              <ItemGroup>
-                <PackageReference Include="System.Text.Json" Version="8.0.0" />
               </ItemGroup>
             </Project>
             """);
@@ -309,10 +286,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddCiFile();
 
-        testContext.AddFile("CODEOWNERS",
-            """
-            * @gsoft-inc/internal-developer-platform
-            """);
+        testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
         testContext.AddFile("project.csproj",
             /*lang=xml*/"""
@@ -345,10 +319,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddFaillingCiFile();
 
-        testContext.AddFile("CODEOWNERS",
-            """
-            * @gsoft-inc/internal-developer-platform
-            """);
+        testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
         testContext.AddFile("project.csproj",
             /*lang=xml*/"""
