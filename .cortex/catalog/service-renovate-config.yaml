@@ -19,6 +19,6 @@ info:
     provider: CORTEX
   x-cortex-link:
   - type: cortex
-    url: https://github.com/gsoft-inc/cortex-gitops/blob/main/.cortex/catalog/service-renovate-config.yaml
+    url: https://github.com/gsoft-inc/renovate-config/blob/main/.cortex/catalog/service-renovate-config.yaml
     name: Edit current Cortex entity in GitHub
 
