@@ -47,7 +47,7 @@
   ],
   "packageRules": [
     {
-      "groupName": "Allow Workleap's NuGet and NPM packages to be updated immediately",
+      "description": "Allow Workleap's NuGet and NPM packages to be updated immediately",
       "minimumReleaseAge": "0 days",
       "matchPackageNames": [
         "/^Workleap\\./i",
