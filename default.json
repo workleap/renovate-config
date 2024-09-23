@@ -50,9 +50,9 @@
       "groupName": "Allow Workleap's NuGet and NPM packages to be updated immediately",
       "minimumReleaseAge": "0 days",
       "matchPackageNames": [
-        "/^[wW]orkleap\\./",
-        "/^[oO]ffice[vV]ibe\\./",
-        "/^[sS]share[gG]ate\\./",
+        "/^Workleap\\./i",
+        "/^Officevibe\\./i",
+        "/^Sharegate\\./i",
         "/^@workleap",
         "/^@sharegate",
         "/^@officevibe",
@@ -73,11 +73,12 @@
         "mcr.microsoft.com/dotnet/runtime",
         "mcr.microsoft.com/dotnet/runtime-deps",
         "Azure.Identity",
-        "/^[mM]icrosoft\\./",
-        "/^[sS]ystem\\./",
+        "/^Microsoft\\./i",
+        "/^System\\./i",
         "coverlet.collector",
         "xunit",
-        "/^xunit\\./"
+        "/^xunit\\./i",
+        "/^MongoDB\\./i"
       ]
     },
     {
@@ -107,8 +108,8 @@
     {
       "groupName": "microsoft",
       "matchPackageNames": [
-        "/^[mM]icrosoft\\./",
-        "/^[sS]ystem\\./"
+        "/^Microsoft\\./i",
+        "/^System\\./i"
       ],
       "extends": [
         ":separateMajorReleases"
@@ -118,7 +119,13 @@
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
       "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^[hH]angfire(\\.|$)/"]
+      "matchPackageNames": ["/^Hangfire(\\.|$)/i"]
+    },
+    {
+      "groupName": "mongodb monorepo",
+      "description": "Group MongoDB dependencies update in a single PR to avoid conflicts",
+      "matchManagers": ["nuget"],
+      "matchPackageNames": ["/^MongoDB\\./i"]
     },
     {
       "groupName": "pipeline dependencies",
