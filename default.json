@@ -72,10 +72,10 @@
         "mcr.microsoft.com/dotnet/aspnet",
         "mcr.microsoft.com/dotnet/runtime",
         "mcr.microsoft.com/dotnet/runtime-deps",
-        "/^Azure\\.Identity/i",
+        "/^Azure\\.Identity$/i",
         "/^Microsoft\\./i",
         "/^System\\./i",
-        "/^coverlet\\.collector/i",
+        "/^coverlet\\.collector$/i",
         "/^xunit(\\.|$)/i",
         "/^MongoDB\\./i"
       ]
@@ -84,7 +84,7 @@
       "groupName": "gitversion-msbuild",
       "description": "Disable major updates as their are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
       "matchPackageNames": [
-        "/^GitVersion\\.MsBuild/i"
+        "/^GitVersion\\.MsBuild$/i"
       ],
       "extends": [
         ":disableMajorUpdates"
