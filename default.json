@@ -85,7 +85,7 @@
       "description": "Disable major updates as their are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
       "matchPackageNames": [
         "/^GitVersion\\.MsBuild$/i",
-        "/^gitversion\\.tool$/i",
+        "/^gitversion\\.tool$/i"
       ],
       "extends": [
         ":disableMajorUpdates"
