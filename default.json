@@ -79,6 +79,15 @@
       ]
     },
     {
+      "groupName": "workleap",
+      "matchPackageNames": [
+        "/^[wW]orkleap\\./"
+      ],
+      "extends": [
+        ":separateMajorReleases"
+      ]
+    },
+    {
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
       "matchManagers": ["nuget"],
