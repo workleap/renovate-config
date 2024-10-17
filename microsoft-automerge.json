@@ -6,10 +6,6 @@
   "packageRules": [
     {
       "groupName": "microsoft",
-      "matchPackageNames": [
-        "/^[mM]icrosoft\\./",
-        "/^[sS]ystem\\./"
-      ],
       "extends": [
         ":automergeBranch",
         ":automergeMinor"
