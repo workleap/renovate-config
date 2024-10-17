@@ -186,6 +186,181 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
+    public async Task RenovateMicrosoftDependenciesWithAutomerge()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("microsoft-automerge.json");
+
+        testContext.AddFile("project.csproj",
+          """
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="System.Text.Json" Version="7.0.0" />
+            <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="1.0.2" />
+            <PackageReference Include="microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.0" />
+            <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.0.0" />
+            <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4">
+              <PrivateAssets>all</PrivateAssets>
+              <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            </PackageReference>
+          </ItemGroup>
+        </Project>
+        """);
+
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update dependency system.text.json  to redacted[security]
+              Labels:
+                - security
+              PackageUpdatesInfos:
+                - Package: System.Text.Json
+                  Type: nuget
+                  Update: major
+            - Title: chore(deps): update microsoft (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.ApplicationInsights.AspNetCore
+                  Type: nuget
+                  Update: major
+                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
+                  Type: nuget
+                  Update: major
+                - Package: Microsoft.Azure.AppConfiguration.AspNetCore
+                  Type: nuget
+                  Update: major
+            """);
+
+        await testContext.AssertBranches(
+          """
+            - Title: main
+            - Title: renovate/major-microsoft
+            - Title: renovate/microsoft
+            - Title: renovate/nuget-system.text.json-vulnerability
+            """);
+    }
+
+    [Fact]
+    public async Task RenovateWorkleapDependenciesWithAutomerge()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("workleap-automerge.json");
+
+        testContext.AddFile("project.csproj",
+          """
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.1" />
+            <PackageReference Include="Workleap.Extensions.Http.Authentication.ClientCredentialsGrant" Version="1.3.0" />
+            <PackageReference Include="Workleap.DomainEventPropagation.Abstractions" Version="0.2.0" />
+          </ItemGroup>
+        </Project>
+        """);
+
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update workleap (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.DomainEventPropagation.Abstractions
+                  Type: nuget
+                  Update: major
+                - Package: Workleap.Extensions.Http.Authentication.ClientCredentialsGrant
+                  Type: nuget
+                  Update: major
+            """);
+
+        await testContext.AssertBranches(
+          """
+            - Title: main
+            - Title: renovate/major-workleap
+            - Title: renovate/workleap
+            """);
+    }
+
+    [Fact]
+    public async Task RenovateDependenciesWithAllAutomerge()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("all-automerge.json");
+
+        testContext.AddFile("project.csproj",
+          """
+        <Project Sdk="Microsoft.NET.Sdk">
+          <ItemGroup>
+            <PackageReference Include="System.Text.Json" Version="7.0.0" />
+            <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="1.0.2" />
+            <PackageReference Include="microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.0" />
+            <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.0.0" />
+            <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4">
+              <PrivateAssets>all</PrivateAssets>
+              <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            </PackageReference>
+            <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.1" />
+            <PackageReference Include="Workleap.Extensions.Http.Authentication.ClientCredentialsGrant" Version="1.3.0" />
+            <PackageReference Include="Workleap.DomainEventPropagation.Abstractions" Version="0.2.0" />
+          </ItemGroup>
+        </Project>
+        """);
+
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update dependency system.text.json  to redacted[security]
+              Labels:
+                - security
+              PackageUpdatesInfos:
+                - Package: System.Text.Json
+                  Type: nuget
+                  Update: major
+            - Title: chore(deps): update dependency workleap.domaineventpropagation.abstractions  to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.DomainEventPropagation.Abstractions
+                  Type: nuget
+                  Update: major
+            - Title: chore(deps): update dependency workleap.extensions.http.authentication.clientcredentialsgrant  to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Http.Authentication.ClientCredentialsGrant
+                  Type: nuget
+                  Update: major
+            - Title: chore(deps): update microsoft (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.ApplicationInsights.AspNetCore
+                  Type: nuget
+                  Update: major
+                - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
+                  Type: nuget
+                  Update: major
+                - Package: Microsoft.Azure.AppConfiguration.AspNetCore
+                  Type: nuget
+                  Update: major
+            """);
+
+        await testContext.AssertBranches(
+          """
+            - Title: main
+            - Title: renovate/major-microsoft
+            - Title: renovate/microsoft
+            - Title: renovate/nuget-system.text.json-vulnerability
+            - Title: renovate/workleap.domaineventpropagation.abstractions-0.x
+            - Title: renovate/workleap.domaineventpropagation.abstractions-1.x
+            - Title: renovate/workleap.extensions.http.authentication.clientcredentialsgrant-2.x
+            """);
+    }
+
+    [Fact]
     public async Task DisableGitVersionMsBuildPackage()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);

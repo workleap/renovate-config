@@ -77,7 +77,7 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
         // ReSharper restore ExplicitCallerInfoArgument
     }
 
-    public async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
+    private async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
     {
         var pullRequests = await gitHubClient.PullRequest.GetAllForRepository("gsoft-inc", "renovate-config-test", new PullRequestRequest(){ Base = DefaultBranchName});
 
@@ -109,6 +109,36 @@ internal sealed class TestContext(ITestOutputHelper outputHelper, TemporaryDirec
         }
 
         return pullRequestsInfos;
+    }
+
+    [InlineSnapshotAssertion(nameof(expected))]
+    public async Task AssertBranches(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    {
+        var branches = await GetBranches();
+        InlineSnapshot
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
+            // ReSharper disable ExplicitCallerInfoArgument
+            .Validate(branches, expected, filePath, lineNumber);
+        // ReSharper restore ExplicitCallerInfoArgument
+    }
+
+    private async Task<IEnumerable<BranchInfos>> GetBranches()
+    {
+        var branches = await gitHubClient.Repository.Branch.GetAll("gsoft-inc", "renovate-config-test");
+
+        return  branches.OrderBy(x => x.Name).Select(x => new BranchInfos(x.Name)).ToList();
+    }
+
+    public void UseRenovateFile(string filename)
+    {
+        var gitRoot = GetGitRoot();
+
+        if (File.Exists(temporaryDirectory.FullPath / "renovate.json"))
+        {
+            File.Delete(temporaryDirectory.FullPath / "renovate.json");
+        }
+
+        File.Copy(gitRoot / filename, temporaryDirectory.FullPath / "renovate.json");
     }
 
     private async Task CleanupRepository()
