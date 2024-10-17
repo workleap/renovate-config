@@ -20,12 +20,16 @@
     ":rebaseStalePrs",
     ":semanticCommits"
   ],
+  "ignorePresets": [
+    ":ignoreModulesAndTests"
+  ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
   "dependencyDashboard": false,
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "configMigration": true,
+  "minimumReleaseAge": "3 days",
   "customManagers": [
     {
       "customType": "regex",
@@ -43,10 +47,46 @@
   ],
   "packageRules": [
     {
+      "description": "Allow Workleap's NuGet and NPM packages to be updated immediately",
+      "minimumReleaseAge": "0 days",
+      "matchPackageNames": [
+        "/^Workleap\\./i",
+        "/^Officevibe\\./i",
+        "/^Sharegate\\./i",
+        "/^@workleap",
+        "/^@sharegate",
+        "/^@officevibe",
+        "/^@hopper-ui/",
+        "/^@orbit-ui/",
+        "/^@squide/"
+      ]
+    },
+    {
+      "description": "Automatically merge minor and patch updates for Microsoft and trusted, well-known dependencies",
+      "matchPackageNames": [
+        "dotnet-sdk",
+        "mcr.microsoft.com/dotnet/sdk",
+        "mcr.microsoft.com/dotnet/aspnet",
+        "mcr.microsoft.com/dotnet/runtime",
+        "mcr.microsoft.com/dotnet/runtime-deps",
+        "/^Azure\\.Identity$/i",
+        "/^Microsoft\\./i",
+        "/^System\\./i",
+        "/^coverlet\\.collector$/i",
+        "/^xunit(\\.|$)/i",
+        "/^MongoDB\\./i"
+      ],
+      "extends": [
+        ":automergeBranch",
+        ":automergeMinor"
+      ]
+    },
+    {
       "groupName": "gitversion-msbuild",
       "description": "Disable major updates as their are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
       "matchPackageNames": [
-        "GitVersion.MsBuild"
+        "/^GitVersion\\.MsBuild$/i",
+        "/^gitversion\\.tool$/i"
       ],
       "extends": [
         ":disableMajorUpdates"
@@ -62,7 +102,6 @@
         "mcr.microsoft.com/dotnet/runtime",
         "mcr.microsoft.com/dotnet/runtime-deps"
       ],
-      "minimumReleaseAge": "3 days",
       "extends": [
         ":separateMajorReleases"
       ]
@@ -70,8 +109,8 @@
     {
       "groupName": "microsoft",
       "matchPackageNames": [
-        "/^[mM]icrosoft\\./",
-        "/^[sS]ystem\\./"
+        "/^Microsoft\\./i",
+        "/^System\\./i"
       ],
       "extends": [
         ":separateMajorReleases"
@@ -90,7 +129,13 @@
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
       "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^[hH]angfire(\\.|$)/"]
+      "matchPackageNames": ["/^Hangfire(\\.|$)/i"]
+    },
+    {
+      "groupName": "mongodb monorepo",
+      "description": "Group MongoDB dependencies update in a single PR to avoid conflicts",
+      "matchManagers": ["nuget"],
+      "matchPackageNames": ["/^MongoDB\\./i"]
     },
     {
       "groupName": "pipeline dependencies",
