@@ -245,7 +245,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             /*lang=xml*/"""
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
-                <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.1" />
+                <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11." />
                 <PackageReference Include="Workleap.Extensions.Http.Authentication.ClientCredentialsGrant" Version="1.3.0" />
                 <PackageReference Include="Workleap.DomainEventPropagation.Abstractions" Version="0.2.0" />
               </ItemGroup>
@@ -403,6 +403,122 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: System.Text.Json
                   Type: nuget
                   Update: patch
+              IsAutoMergeEnabled: true
+            """);
+    }
+
+    [Fact]
+    public async Task Given_Workleap_Minor_Dependencies_Update_When_CI_Fail_Then_Abort_AutoMerge_And_Fallback_To_Create_PR()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("microsoft-automerge.json");
+
+        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+
+        testContext.AddInternalDeveloperPlatformCodeOwnersFile();
+
+        testContext.AddFile("project.csproj",
+            /*lang=xml*/"""
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup>
+                  <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+              </ItemGroup>
+            </Project>
+            """);
+
+        await testContext.PushFilesOnDefaultBranch();
+
+        await testContext.RunRenovate();
+        await testContext.WaitForBranchPolicyChecksToSucceed();
+
+        // Need to run renovate a second time to create PR on CI failures
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: patch
+              IsAutoMergeEnabled: true
+            """);
+    }
+
+    [Fact]
+    public async Task Given_Various_Dependencies_Updates_When_CI_Fail_Then_Abort_AutoMerge_And_Fallback_To_Create_PR()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("all-automerge.json");
+
+        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+
+        testContext.AddFile("project.csproj",
+            /*lang=xml*/"""
+                        <Project Sdk="Microsoft.NET.Sdk">
+                          <ItemGroup>
+                            <PackageReference Include="Hangfire.NetCore" Version="1.7.1" />
+                            <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+                            <PackageReference Include="Workleap.Extensions.Configuration.Substitution" Version="1.1.2" />
+                          </ItemGroup>
+                        </Project>
+                        """);
+
+        testContext.AddFile("package.json",
+            /*lang=json*/"""
+             {
+               "dependencies": {
+                 "@squide/core": "5.2.0"
+               }
+             }
+             """);
+
+        await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+
+        // Need to run renovate a second time so that branch is merged
+        // Need to pull commit status to see is check is completed
+        await testContext.WaitForBranchPolicyChecksToSucceed();
+        await testContext.RunRenovate();
+
+        await testContext.WaitForBranchPolicyChecksToSucceed();
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update dependency hangfire.netcore to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Hangfire.NetCore
+                  Type: nuget
+                  Update: minor
+              IsAutoMergeEnabled: true
+            - Title: chore(deps): update dependency microsoft.extensions.logging.abstractions to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.Extensions.Logging.Abstractions
+                  Type: nuget
+                  Update: patch
+              IsAutoMergeEnabled: true
+            - Title: chore(deps): update dependency workleap.extensions.configuration.substitution to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Configuration.Substitution
+                  Type: nuget
+                  Update: patch
+              IsAutoMergeEnabled: true
+            - Title: fix(deps): update dependency @squide/core to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @squide/core
+                  Type: dependencies
+                  Update: minor
               IsAutoMergeEnabled: true
             """);
     }
