@@ -221,6 +221,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: microsoft.AspNetCore.Authentication.OpenIdConnect
                   Type: nuget
                   Update: major
+                - Package: Microsoft.Azure.AppConfiguration.AspNetCore
+                  Type: nuget
+                  Update: major
             """);
 
         await testContext.AssertCommits(
@@ -259,20 +262,30 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            something
+            - Title: chore(deps): update workleap (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.DomainEventPropagation.Abstractions
+                  Type: nuget
+                  Update: major
+                - Package: Workleap.Extensions.Http.Authentication.ClientCredentialsGrant
+                  Type: nuget
+                  Update: major
             """);
 
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update microsoft
+            - Message: chore(deps): update dependency workleap.domaineventpropagation.abstractions to redacted
             - Message: IDP ScaffoldIt automated test
             """);
     }
 
     [Fact]
-    public async Task Given_Various_Dependencies_Updates_Then_Opens_Multiple_PRs_And_AutoMerges_Microsoft_Minor_Update()
+    public async Task Given_Various_Dependencies_Updates_And_All_AutoMerge_Then_AllMerged()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("all-automerge.json");
 
         testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
@@ -304,33 +317,17 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.WaitForBranchPolicyChecksToSucceed();
         await testContext.RunRenovate();
 
+        await testContext.WaitForBranchPolicyChecksToSucceed();
+        await testContext.RunRenovate();
+
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency hangfire.netcore to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Hangfire.NetCore
-                  Type: nuget
-                  Update: minor
-            - Title: chore(deps): update dependency workleap.extensions.configuration.substitution to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Workleap.Extensions.Configuration.Substitution
-                  Type: nuget
-                  Update: patch
-            - Title: fix(deps): update dependency @squide/core to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: @squide/core
-                  Type: dependencies
-                  Update: minor
+            []
             """);
 
         await testContext.AssertCommits(
             """
+            - Message: chore(deps): update dependency workleap.extensions.configuration.substitution to redacted
             - Message: chore(deps): update dependency microsoft.extensions.logging.abstractions to redacted
             - Message: IDP ScaffoldIt automated test
             """);
@@ -340,6 +337,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Succeed_Then_AutoMerge_By_Pushing_On_Main()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("microsoft-automerge.json");
 
         testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
@@ -373,6 +371,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     public async Task Given_Microsoft_Minor_Dependencies_Update_When_CI_Fail_Then_Abort_AutoMerge_And_Fallback_To_Create_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("microsoft-automerge.json");
 
         testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
 
