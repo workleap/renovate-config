@@ -443,7 +443,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Workleap.Extensions.Mongo
                   Type: nuget
                   Update: patch
-              IsAutoMergeEnabled: true
             """);
     }
 
