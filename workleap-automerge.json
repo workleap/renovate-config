@@ -6,6 +6,9 @@
   "packageRules": [
     {
       "groupName": "workleap",
+      "matchPackageNames": [
+        "/^[wW]orkleap\\./"
+      ],
       "extends": [
         ":automergeBranch",
         ":automergeMinor"
