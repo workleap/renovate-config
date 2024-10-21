@@ -75,10 +75,6 @@
         "/^coverlet\\.collector$/i",
         "/^xunit(\\.|$)/i",
         "/^MongoDB\\./i"
-      ],
-      "extends": [
-        ":automergeBranch",
-        ":automergeMinor"
       ]
     },
     {

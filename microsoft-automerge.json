@@ -1,14 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-      "github>gsoft-inc/renovate-config"
-  ],
   "packageRules": [
     {
       "groupName": "microsoft",
       "matchPackageNames": [
-        "/^[mM]icrosoft\\./",
-        "/^[sS]ystem\\./"
+        "dotnet-sdk",
+        "mcr.microsoft.com/dotnet/sdk",
+        "mcr.microsoft.com/dotnet/aspnet",
+        "mcr.microsoft.com/dotnet/runtime",
+        "mcr.microsoft.com/dotnet/runtime-deps",
+        "/^Azure\\.Identity$/i",
+        "/^Microsoft\\./i",
+        "/^System\\./i"
       ],
       "extends": [
         ":automergeBranch",
