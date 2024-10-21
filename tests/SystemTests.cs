@@ -9,6 +9,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
+        testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
         testContext.AddFile("global.json", /*lang=json*/"""{"sdk": {"version": "6.0.100"}}""");
 
         testContext.AddFile("Dockerfile",
@@ -85,6 +86,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: mcr.microsoft.com/dotnet/sdk
                   Type: stage
                   Update: major
+            - Title: fix(deps): update dependency @squide/core to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @squide/core
+                  Type: dependencies
+                  Update: minor
             """);
     }
 
@@ -136,18 +144,40 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
+            - Title: Update dependency dotnet-sdk to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: dotnet-sdk
+                  Type: dotnet-sdk
+                  Update: major
             - Title: Update dependency System.Text.Json to redacted[SECURITY]
-              Labels: []
+              Labels:
+                - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
                   Type: nuget
+                  Update: major
+            - Title: Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: mcr.microsoft.com/dotnet/aspnet
+                  Type: final
+                  Update: major
+            - Title: Update mcr.microsoft.com/dotnet/sdk Docker tag to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: mcr.microsoft.com/dotnet/sdk
+                  Type: stage
                   Update: major
             """);
 
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update dependency workleap.extensions.configuration.substitution to redacted
-            - Message: chore(deps): update dependency microsoft.extensions.logging.abstractions to redacted
+            - Message: Update dependency dotnet-sdk to redacted
+            - Message: Update dependency Workleap.Extensions.Mongo to redacted
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -198,9 +228,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     }
 
     [Fact]
-    public async Task Given_MongoDB_Updates_Then_AutoMerges_Minor_Updates_In_Single_PR()
+    public async Task Given_Dotnet_ThirdParty_Dependencies_Updates_Then_AutoMerges_Minor_Updates()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("dotnet-trusted-thirdparty-dependencies-automerge.json");
 
         testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
@@ -211,6 +242,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 <PackageReference Include="MongoDB.Bson" Version="2.27.0" />
                 <PackageReference Include="MongoDB.Driver" Version="2.27.0" />
                 <PackageReference Include="MongoDB.Driver.Core" Version="2.27.0" />
+                <PackageReference Include="coverlet.collector" Version="3.0.0">
+                    <PrivateAssets>all</PrivateAssets>
+                    <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+                </PackageReference>
+                <PackageReference Include="xunit" Version="1.9.1" />
               </ItemGroup>
             </Project>
             """);
@@ -222,9 +258,29 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.WaitForBranchPolicyChecksToSucceed();
         await testContext.RunRenovate();
 
+        await testContext.AssertPullRequests(
+            """
+            - Title: Update microsoft (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: coverlet.collector
+                  Type: nuget
+                  Update: major
+                - Package: MongoDB.Bson
+                  Type: nuget
+                  Update: major
+                - Package: MongoDB.Driver
+                  Type: nuget
+                  Update: major
+                - Package: xunit
+                  Type: nuget
+                  Update: major
+            """);
+
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update mongodb monorepo to redacted
+            - Message: Update microsoft
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -306,14 +362,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency system.text.json to redacted[security]
+            - Title: Update dependency System.Text.Json to redacted[SECURITY]
               Labels:
-                - security
+                - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
                   Type: nuget
                   Update: major
-            - Title: chore(deps): update microsoft (major)
+            - Title: Update microsoft (major)
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -330,7 +386,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update microsoft
+            - Message: Update microsoft
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -364,7 +420,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update workleap (major)
+            - Title: Update workleap (major)
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -378,7 +434,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update dependency workleap.domaineventpropagation.abstractions to redacted
+            - Message: Update workleap
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -412,7 +468,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: chore(deps): update dependency system.text.json to redacted[security]
+            - Message: Update dependency System.Text.Json to redacted[SECURITY]
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -446,9 +502,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency system.text.json to redacted[security]
+            - Title: Update dependency System.Text.Json to redacted[SECURITY]
               Labels:
-                - security
+                - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
                   Type: nuget
@@ -461,7 +517,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     public async Task Given_Workleap_Minor_Dependencies_Update_When_CI_Fail_Then_Abort_AutoMerge_And_Fallback_To_Create_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
-        testContext.UseRenovateFile("microsoft-automerge.json");
+        testContext.UseRenovateFile("workleap-automerge.json");
 
         testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
 
@@ -486,13 +542,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
+            - Title: Update dependency Workleap.Extensions.Mongo to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Mongo
                   Type: nuget
                   Update: patch
+              IsAutoMergeEnabled: true
             """);
     }
 
@@ -537,7 +594,15 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency hangfire.netcore to redacted
+            - Title: Update dependency @squide/core to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @squide/core
+                  Type: dependencies
+                  Update: minor
+              IsAutoMergeEnabled: true
+            - Title: Update dependency Hangfire.NetCore to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -545,7 +610,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: minor
               IsAutoMergeEnabled: true
-            - Title: chore(deps): update dependency microsoft.extensions.logging.abstractions to redacted
+            - Title: Update dependency Microsoft.Extensions.Logging.Abstractions to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -553,21 +618,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: patch
               IsAutoMergeEnabled: true
-            - Title: chore(deps): update dependency workleap.extensions.configuration.substitution to redacted
+            - Title: Update dependency Workleap.Extensions.Configuration.Substitution to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Configuration.Substitution
                   Type: nuget
                   Update: patch
-              IsAutoMergeEnabled: true
-            - Title: fix(deps): update dependency @squide/core to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: @squide/core
-                  Type: dependencies
-                  Update: minor
               IsAutoMergeEnabled: true
             """);
     }
