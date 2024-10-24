@@ -6,9 +6,9 @@ The shared configurations are baselines. Each project is free to set their own r
 
 ## Usage
 
-### GitHub projects
+### Extending the base configuration:
+#### GitHub projects
 
-Extending the base configuration:
 
 ```json
 {
@@ -18,7 +18,7 @@ Extending the base configuration:
   ]
 }
 ```
-### Azure DevOps
+#### Azure DevOps
 
 ```json
 {
@@ -34,7 +34,7 @@ Extending the base configuration:
 }
 ```
 
-You also need to provide a GitHub token in the CI:
+You will also need to provide a GitHub token in the CI:
 
 ```yaml
 trigger: none
