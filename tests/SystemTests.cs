@@ -176,8 +176,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update dependency dotnet-sdk to redacted
-            - Message: Update dependency Workleap.Extensions.Mongo to redacted
+            - Message:
+                Update dependency dotnet-sdk to redacted
+                
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
+            - Message:
+                Update dependency Workleap.Extensions.Mongo to redacted
+                
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -386,7 +392,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update microsoft
+            - Message: 
+                Update microsoft to redacted
+                
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }

@@ -172,7 +172,7 @@ internal sealed class TestContext(
     {
         var commits = await this.GetCommits();
         InlineSnapshot
-            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", "to redacted")))
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "(\\([^ ]+\\))|(to [^ ]+ \\([^ ]+\\))", "to redacted")))
             .Validate(commits, expected, filePath, lineNumber);
     }
 
