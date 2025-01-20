@@ -161,8 +161,18 @@ internal sealed class TestContext(
     public async Task AssertPullRequests(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
     {
         var pullRequests = await this.GetPullRequests();
+
+        /*
+         * We scrub the line if there is a version number in it, so that we don't have to update the snapshot every time the version changes
+         *
+         * All the following would become `update dependency system.text.json to redacted`
+         * update dependency system.text.json to 8.0.5 [security]
+         * update dependency system.text.json to 8.0.5 [security] (#9834)
+         * update dependency system.text.json to 8.0.5 (#2903)
+         * update dependency system.text.json to 8.0.5
+         */
         InlineSnapshot
-            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", "to redacted")))
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "(\\bto\\b).*", "to redacted")))
             .Validate(pullRequests, expected, filePath, lineNumber);
     }
 
@@ -171,8 +181,19 @@ internal sealed class TestContext(
     public async Task AssertCommits(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
     {
         var commits = await this.GetCommits();
+
+        /*
+         * We scrub the line if there is a version number in it, so that we don't have to update the snapshot every time the version changes
+         *
+         * All the following would become `update dependency system.text.json to redacted`
+         * update dependency system.text.json to 8.0.5 [security]
+         * update dependency system.text.json to 8.0.5 [security] (#9834)
+         * update dependency system.text.json to 8.0.5 (#2903)
+         * update dependency system.text.json (#2903)
+         * update dependency system.text.json to 8.0.5
+         */
         InlineSnapshot
-            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", "to redacted")))
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "(\\bto\\b).*|(\\([^)]*\\))", "to redacted")))
             .Validate(commits, expected, filePath, lineNumber);
     }
 
