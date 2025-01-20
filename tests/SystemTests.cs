@@ -73,7 +73,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: mcr.microsoft.com/dotnet/sdk
                   Type: stage
                   Update: patch
-            - Title: chore(deps): update dotnet-sdk to redacted(major)
+            - Title: chore(deps): update dotnet-sdk to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
