@@ -286,7 +286,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update microsoft
+            - Message:
+                Update microsoft to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -331,6 +334,16 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: @storybook/addon-interactions
                   Type: devDependencies
                   Update: pin
+            - Title: fix(deps): update npm (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @azure/msal-browser
+                  Type: dependencies
+                  Update: major
+                - Package: @azure/msal-react
+                  Type: dependencies
+                  Update: major
             """);
     }
 
@@ -443,7 +456,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update workleap
+            - Message:
+                Update workleap to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -627,6 +643,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: patch
               IsAutoMergeEnabled: true
+            - Title: Update dependency Microsoft.Extensions.Logging.Abstractions to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.Extensions.Logging.Abstractions
+                  Type: nuget
+                  Update: major
             - Title: Update dependency Workleap.Extensions.Configuration.Substitution to redacted
               Labels:
                 - renovate
