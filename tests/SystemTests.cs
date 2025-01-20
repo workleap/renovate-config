@@ -392,9 +392,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: 
+            - Message:
                 Update microsoft to redacted
-                
+
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
