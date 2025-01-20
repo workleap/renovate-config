@@ -46,7 +46,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency system.text.json to redacted[security]
+            - Title: chore(deps): update dependency system.text.json to redacted
               Labels:
                 - security
               PackageUpdatesInfos:
@@ -73,7 +73,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: mcr.microsoft.com/dotnet/sdk
                   Type: stage
                   Update: patch
-            - Title: chore(deps): update dotnet-sdk to redacted(major)
+            - Title: chore(deps): update dotnet-sdk to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -151,7 +151,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: dotnet-sdk
                   Type: dotnet-sdk
                   Update: major
-            - Title: Update dependency System.Text.Json to redacted[SECURITY]
+            - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -176,8 +176,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update dependency dotnet-sdk to redacted
-            - Message: Update dependency Workleap.Extensions.Mongo to redacted
+            - Message:
+                Update dependency dotnet-sdk to redacted
+                
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
+            - Message:
+                Update dependency Workleap.Extensions.Mongo to redacted
+                
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -280,7 +286,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update microsoft
+            - Message:
+                Update microsoft to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -325,6 +334,16 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: @storybook/addon-interactions
                   Type: devDependencies
                   Update: pin
+            - Title: fix(deps): update npm (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @azure/msal-browser
+                  Type: dependencies
+                  Update: major
+                - Package: @azure/msal-react
+                  Type: dependencies
+                  Update: major
             """);
     }
 
@@ -362,7 +381,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency System.Text.Json to redacted[SECURITY]
+            - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -386,7 +405,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update microsoft
+            - Message:
+                Update microsoft to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -434,7 +456,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update workleap
+            - Message:
+                Update workleap to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -468,7 +493,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update dependency System.Text.Json to redacted[SECURITY]
+            - Message:
+                Update dependency System.Text.Json to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -502,7 +530,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency System.Text.Json to redacted[SECURITY]
+            - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -618,6 +646,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: patch
               IsAutoMergeEnabled: true
+            - Title: Update dependency Microsoft.Extensions.Logging.Abstractions to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.Extensions.Logging.Abstractions
+                  Type: nuget
+                  Update: major
             - Title: Update dependency Workleap.Extensions.Configuration.Substitution to redacted
               Labels:
                 - renovate
