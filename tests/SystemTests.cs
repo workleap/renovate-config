@@ -46,7 +46,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency system.text.json to redacted[security]
+            - Title: chore(deps): update dependency system.text.json to redacted
               Labels:
                 - security
               PackageUpdatesInfos:
@@ -151,7 +151,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: dotnet-sdk
                   Type: dotnet-sdk
                   Update: major
-            - Title: Update dependency System.Text.Json to redacted[SECURITY]
+            - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -381,7 +381,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency System.Text.Json to redacted[SECURITY]
+            - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -493,7 +493,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertCommits(
             """
-            - Message: Update dependency System.Text.Json to redacted[SECURITY]
+            - Message:
+                Update dependency System.Text.Json to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
     }
@@ -527,7 +530,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency System.Text.Json to redacted[SECURITY]
+            - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
