@@ -25,7 +25,7 @@ internal sealed class TestContext(
     private static GitHubClient? _sharedGitHubClient;
 
     private const string DefaultBranchName = "main";
-    private const string RepositoryOwner = "gsoft-inc";
+    private const string RepositoryOwner = "workleap";
     private const string RepositoryName = "renovate-config-test";
     private readonly string _repoPath = temporaryDirectory.FullPath;
 
@@ -54,7 +54,7 @@ internal sealed class TestContext(
     {
         temporaryDirectory.CreateTextFile("CODEOWNERS",
             """
-            * @gsoft-inc/internal-developer-platform
+            * @workleap/internal-developer-platform
             """);
     }
 
@@ -107,7 +107,7 @@ internal sealed class TestContext(
     public async Task PushFilesOnDefaultBranch()
     {
         var token = await GetGitHubToken(outputHelper);
-        var gitUrl = $"https://{token}@github.com/gsoft-inc/renovate-config-test";
+        var gitUrl = $"https://{token}@github.com/workleap/renovate-config-test";
 
         await this.CleanupRepository();
 
@@ -148,11 +148,11 @@ internal sealed class TestContext(
                 "-e", "RENOVATE_BRANCH_CONCURRENT_LIMIT=0",
                 "-e", "RENOVATE_LABELS=[\"renovate\"]",
                 "-e", "RENOVATE_INHERIT_CONFIG_FILE_NAME=not-renovate.json",
-                "-e", "RENOVATE_REPOSITORIES=[\"https://github.com/gsoft-inc/renovate-config-test\"]",
+                "-e", "RENOVATE_REPOSITORIES=[\"https://github.com/workleap/renovate-config-test\"]",
                 "--pull", "always",
                 "renovate/renovate:latest",
                 "renovate",
-                "gsoft-inc/renovate-config-test"
+                "workleap/renovate-config-test"
             ]);
     }
 

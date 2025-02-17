@@ -14,7 +14,7 @@ Renovate's documentation on leveraging [shareable presets](https://docs.renovate
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>gsoft-inc/renovate-config"
+    "github>workleap/renovate-config"
   ]
 }
 ```
@@ -27,11 +27,11 @@ There are multiple configurations you can extend to enable auto-merge on differe
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>gsoft-inc/renovate-config"
-    "github>gsoft-inc/renovate-config//microsoft-automerge.json",
-    "github>gsoft-inc/renovate-config//workleap-automerge.json",
-    "github>gsoft-inc/renovate-config//dotnet-trusted-thirdparty-dependencies-automerge.json",
-    "github>gsoft-inc/renovate-config//all-automerge.json"
+    "github>workleap/renovate-config"
+    "github>workleap/renovate-config//microsoft-automerge.json",
+    "github>workleap/renovate-config//workleap-automerge.json",
+    "github>workleap/renovate-config//dotnet-trusted-thirdparty-dependencies-automerge.json",
+    "github>workleap/renovate-config//all-automerge.json"
   ]
 }
 
