@@ -27,14 +27,13 @@ There are multiple configurations you can extend to enable auto-merge on differe
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "github>workleap/renovate-config"
+    "github>workleap/renovate-config",
     "github>workleap/renovate-config//microsoft-automerge.json",
     "github>workleap/renovate-config//workleap-automerge.json",
     "github>workleap/renovate-config//dotnet-trusted-thirdparty-dependencies-automerge.json",
     "github>workleap/renovate-config//all-automerge.json"
   ]
 }
-
 ```
 
 Auto-merge has been set up using the [branch approach](https://docs.renovatebot.com/key-concepts/automerge/#branch-vs-pr-automerging) to minimize noise and bypass PR review requirements. If your main branch has branch protection rules, you may need to allow your build agent's service account to bypass pull request creation.

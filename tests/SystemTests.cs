@@ -18,8 +18,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             FROM mcr.microsoft.com/dotnet/aspnet:6.0.0
             """);
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile(
+            "project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="System.Text.Json" Version="7.0.0" />
@@ -28,14 +29,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        testContext.AddFile("package.json",
-            /*lang=json*/"""
-             {
-               "dependencies": {
-                 "@squide/core": "5.2.0"
-               }
-             }
-             """);
+        testContext.AddFile("package.json", /*lang=json*/
+            """
+            {
+              "dependencies": {
+                "@squide/core": "5.2.0"
+              }
+            }
+            """);
 
         await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
@@ -112,8 +113,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             FROM mcr.microsoft.com/dotnet/aspnet:6.0.0
             """);
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="System.Text.Json" Version="7.0.0" />
@@ -122,14 +123,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        testContext.AddFile("package.json",
-            /*lang=json*/"""
-             {
-               "dependencies": {
-                 "@squide/core": "5.2.0"
-               }
-             }
-             """);
+        testContext.AddFile("package.json", /*lang=json*/
+            """
+            {
+              "dependencies": {
+                "@squide/core": "5.2.0"
+              }
+            }
+            """);
 
         await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
@@ -193,8 +194,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="Hangfire" Version="1.7.1" />
@@ -241,8 +242,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="MongoDB.Bson" Version="2.27.0" />
@@ -299,8 +300,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-        testContext.AddFile("package.json",
-            /*lang=json*/"""
+        testContext.AddFile("package.json", /*lang=json*/
+            """
             {
               "dependencies": {
                 "@azure/msal-browser": "^3.13.0",
@@ -355,8 +356,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="System.Text.Json" Version="7.0.0" />
@@ -421,8 +422,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
@@ -474,8 +475,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="System.Text.Json" Version="8.0.0" />
@@ -511,8 +512,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="System.Text.Json" Version="8.0.0" />
@@ -551,8 +552,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                   <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
@@ -589,25 +590,25 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
-                        <Project Sdk="Microsoft.NET.Sdk">
-                          <ItemGroup>
-                            <PackageReference Include="Hangfire.NetCore" Version="1.7.1" />
-                            <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
-                            <PackageReference Include="Workleap.Extensions.Configuration.Substitution" Version="1.1.2" />
-                          </ItemGroup>
-                        </Project>
-                        """);
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup>
+                <PackageReference Include="Hangfire.NetCore" Version="1.7.1" />
+                <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+                <PackageReference Include="Workleap.Extensions.Configuration.Substitution" Version="1.1.2" />
+              </ItemGroup>
+            </Project>
+            """);
 
-        testContext.AddFile("package.json",
-            /*lang=json*/"""
-             {
-               "dependencies": {
-                 "@squide/core": "5.2.0"
-               }
-             }
-             """);
+        testContext.AddFile("package.json", /*lang=json*/
+            """
+            {
+              "dependencies": {
+                "@squide/core": "5.2.0"
+              }
+            }
+            """);
 
         await testContext.PushFilesOnDefaultBranch();
         await testContext.RunRenovate();
@@ -669,8 +670,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-        testContext.AddFile("project.csproj",
-            /*lang=xml*/"""
+        testContext.AddFile("project.csproj", /*lang=xml*/
+            """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="GitVersion.MsBuild" Version="5.12.0" />
