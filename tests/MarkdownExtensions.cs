@@ -13,9 +13,10 @@ internal static class MarkdownExtensions
         renderer.Render(obj);
         return writer.ToString();
     }
+
     public static string InnerText(this MarkdownObject obj)
     {
         var inlines = obj.Descendants<LiteralInline>();
-        return string.Join(" ", inlines.Select(inline=> inline.ToNormalizedString()));
+        return string.Join(" ", inlines.Select(inline => inline.ToNormalizedString()));
     }
 }

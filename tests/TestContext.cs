@@ -1,17 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CliWrap;
-using GitHub.Models;
 using GitHub.Octokit.Client;
 using GitHub.Octokit.Client.Authentication;
-using GitHub.Repos.Item.Item.CheckRuns;
-using GitHub.Repos.Item.Item.Commits.Item.CheckRuns;
 using Markdig;
 using Markdig.Extensions.Tables;
-using Markdig.Syntax;
 using Meziantou.Framework;
 using Meziantou.Framework.InlineSnapshotTesting;
 using Octokit;
@@ -25,12 +20,12 @@ internal sealed class TestContext(
     ITestOutputHelper outputHelper,
     TemporaryDirectory temporaryDirectory,
     GitHubClient gitHubClient,
-    Octokit.GitHubClient legacyGitHubClient): IAsyncDisposable
+    Octokit.GitHubClient legacyGitHubClient) : IAsyncDisposable
 {
     private static GitHubClient? _sharedGitHubClient;
-    
+
     private const string DefaultBranchName = "main";
-    private const string RepositoryOwner = "gsoft-inc";
+    private const string RepositoryOwner = "workleap";
     private const string RepositoryName = "renovate-config-test";
     private readonly string _repoPath = temporaryDirectory.FullPath;
 
@@ -38,7 +33,7 @@ internal sealed class TestContext(
     {
         var gitHubClient = await GetGitHubClient(outputHelper);
         var legacyGitHubClient = await GetLegacyGitHubClient(outputHelper);
-        
+
         await ExecuteCommand(outputHelper, "gh", ["auth", "status"]);
 
         var temporaryDirectory = TemporaryDirectory.Create();
@@ -54,11 +49,19 @@ internal sealed class TestContext(
     {
         temporaryDirectory.CreateTextFile(path, content);
     }
-    
-    public void AddCiFile()
+
+    public void AddInternalDeveloperPlatformCodeOwnersFile()
     {
-        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml", 
+        temporaryDirectory.CreateTextFile("CODEOWNERS",
             """
+            * @workleap/internal-developer-platform
+            """);
+    }
+
+    public void AddSuccessfulWorkflowFileToSatisfyBranchPolicy()
+    {
+        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml",
+            /*lang=yaml*/"""
             name: CI
             on:
                 pull_request: 
@@ -72,16 +75,16 @@ internal sealed class TestContext(
                 build:
                     runs-on: ubuntu-latest
                     steps:
-                        - name: Sleep
+                        - name: Dummy successful step
                           run: sleep 1
             """
             );
     }
-    
-    public void AddFaillingCiFile()
+
+    public void AddFailingWorklowFileToSatisfyBranchPolicy()
     {
-        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml", 
-            """
+        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml",
+            /*lang=yaml*/"""
             name: CI
             on:
                 pull_request: 
@@ -95,22 +98,35 @@ internal sealed class TestContext(
                 build:
                     runs-on: ubuntu-latest
                     steps:
-                        - name: Fail step
+                        - name: Dummy failing step
                           run: exit 1
             """
         );
     }
-    
+
     public async Task PushFilesOnDefaultBranch()
     {
         var token = await GetGitHubToken(outputHelper);
-        var gitUrl = $"https://{token}@github.com/gsoft-inc/renovate-config-test";
+        var gitUrl = $"https://{token}@github.com/workleap/renovate-config-test";
 
         await this.CleanupRepository();
 
-        await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "add", "."] );
-        await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
-        await ExecuteCommand(outputHelper, "git", ["-C", _repoPath, "push", gitUrl, DefaultBranchName + ":" + DefaultBranchName, "--force"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "add", "."]);
+        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "push", gitUrl, DefaultBranchName + ":" + DefaultBranchName, "--force"]);
+    }
+
+    public void UseRenovateFile(string filename)
+    {
+        var gitRoot = GetGitRoot();
+        var filePath = temporaryDirectory.FullPath / "renovate.json";
+
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+
+        File.Copy(gitRoot / filename, filePath);
     }
 
     public async Task RunRenovate()
@@ -127,38 +143,61 @@ internal sealed class TestContext(
                 "-e", "RENOVATE_PRINT_CONFIG=true",
                 "-e", $"RENOVATE_TOKEN={token}",
                 "-e", "RENOVATE_RECREATE_WHEN=always",
+                "-e", "RENOVATE_PR_HOURLY_LIMIT=0",
+                "-e", "RENOVATE_PR_CONCURRENT_LIMIT=0",
+                "-e", "RENOVATE_BRANCH_CONCURRENT_LIMIT=0",
+                "-e", "RENOVATE_LABELS=[\"renovate\"]",
                 "-e", "RENOVATE_INHERIT_CONFIG_FILE_NAME=not-renovate.json",
-                "-e", "RENOVATE_REPOSITORIES=[\"https://github.com/gsoft-inc/renovate-config-test\"]",
+                "-e", "RENOVATE_REPOSITORIES=[\"https://github.com/workleap/renovate-config-test\"]",
                 "--pull", "always",
                 "renovate/renovate:latest",
                 "renovate",
-                "gsoft-inc/renovate-config-test"
+                "workleap/renovate-config-test"
             ]);
     }
 
     [InlineSnapshotAssertion(nameof(expected))]
+    [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "We want to forward the caller info")]
     public async Task AssertPullRequests(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
     {
-        var pullRequests = await GetPullRequests();
+        var pullRequests = await this.GetPullRequests();
+
+        /*
+         * We scrub the line if there is a version number in it, so that we don't have to update the snapshot every time the version changes
+         *
+         * All the following would become `update dependency system.text.json to redacted`
+         * update dependency system.text.json to 8.0.5 [security]
+         * update dependency system.text.json to 8.0.5 [security] (#9834)
+         * update dependency system.text.json to 8.0.5 (#2903)
+         * update dependency system.text.json to 8.0.5
+         */
         InlineSnapshot
-            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
-        // ReSharper disable ExplicitCallerInfoArgument
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "(\\bto\\b).*", "to redacted")))
             .Validate(pullRequests, expected, filePath, lineNumber);
-        // ReSharper restore ExplicitCallerInfoArgument
-    }
-    
-    [InlineSnapshotAssertion(nameof(expected))]
-    public async Task AssertCommits(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
-    {
-        var commits = await GetCommits();
-        InlineSnapshot
-            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "to [^ ]+ ?", " to redacted")))
-            // ReSharper disable ExplicitCallerInfoArgument
-            .Validate(commits, expected, filePath, lineNumber);
-        // ReSharper restore ExplicitCallerInfoArgument
     }
 
-    public async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
+    [InlineSnapshotAssertion(nameof(expected))]
+    [SuppressMessage("ReSharper", "ExplicitCallerInfoArgument", Justification = "We want to forward the caller info")]
+    public async Task AssertCommits(string? expected = null, [CallerFilePath] string? filePath = null, [CallerLineNumber] int lineNumber = -1)
+    {
+        var commits = await this.GetCommits();
+
+        /*
+         * We scrub the line if there is a version number in it, so that we don't have to update the snapshot every time the version changes
+         *
+         * All the following would become `update dependency system.text.json to redacted`
+         * update dependency system.text.json to 8.0.5 [security]
+         * update dependency system.text.json to 8.0.5 [security] (#9834)
+         * update dependency system.text.json to 8.0.5 (#2903)
+         * update dependency system.text.json (#2903)
+         * update dependency system.text.json to 8.0.5
+         */
+        InlineSnapshot
+            .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "(\\bto\\b).*|(\\([^)]*\\))", "to redacted")))
+            .Validate(commits, expected, filePath, lineNumber);
+    }
+
+    private async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
     {
         var pullRequests = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Pulls.GetAsync() ?? [];
 
@@ -166,9 +205,9 @@ internal sealed class TestContext(
 
         var pullRequestsInfos = new List<PullRequestInfos>(pullRequests.Count);
 
-        foreach (PullRequestSimple pullRequest in pullRequests.OrderBy(x => x.Title))
+        foreach (var pullRequest in pullRequests.OrderBy(x => x.Title))
         {
-            MarkdownDocument markdownDocument = Markdown.Parse(pullRequest.Body!, pipeline);
+            var markdownDocument = Markdown.Parse(pullRequest.Body!, pipeline);
             var prTitle = pullRequest.Title;
             var prLabels = pullRequest.Labels?.Select(x => x.Name).Order();
 
@@ -187,8 +226,8 @@ internal sealed class TestContext(
             }
 
             pullRequestsInfos.Add(new PullRequestInfos(
-                prTitle!, 
-                prLabels!, 
+                prTitle!,
+                prLabels!,
                 packageUpdateInfos.OrderBy(x => x.Package).ThenBy(x => x.Type).ThenBy(x => x.Update),
                 pullRequest.AutoMerge != null
                 ));
@@ -196,24 +235,24 @@ internal sealed class TestContext(
 
         return pullRequestsInfos;
     }
-    
-    public async Task<IEnumerable<CommitInfo>> GetCommits()
+
+    private async Task<IEnumerable<CommitInfo>> GetCommits()
     {
         var commits = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Commits.GetAsync() ?? [];
-        
+
         var commitInfos = new List<CommitInfo>(commits.Count);
 
         foreach (var commit in commits)
         {
             var message = commit.CommitProp!.Message ?? string.Empty;
-            
+
             commitInfos.Add(new CommitInfo(message));
         }
-        
+
         return commitInfos;
     }
-    
-    public async Task WaitForLatestCommitChecksToSucceed()
+
+    public async Task WaitForBranchPolicyChecksToSucceed()
     {
         var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
 
@@ -221,33 +260,33 @@ internal sealed class TestContext(
         {
             if (branch.Name != DefaultBranchName)
             {
-                await WaitForCommitAssociatedWorkflowsToSucceed(branch.Commit!.Sha!);
+                await this.WaitForCommitAssociatedWorkflowsToSucceed(branch.Commit!.Sha!);
             }
         }
     }
-    
+
     // Can't uses commit checks directly since fined grained permission token does not support checks scopes
     // Related issue: https://github.com/cli/cli/issues/8842
     private async Task WaitForCommitAssociatedWorkflowsToSucceed(string commitSha)
     {
-        var isCommitStatusCompleted = false;
+        bool isCommitStatusCompleted;
 
         do
         {
             var workflows = await legacyGitHubClient.Actions.Workflows.Runs.List(RepositoryOwner, RepositoryName,
-                new WorkflowRunsRequest() { HeadSha = commitSha });
-            
-            isCommitStatusCompleted = 
+                new WorkflowRunsRequest { HeadSha = commitSha });
+
+            isCommitStatusCompleted =
                 workflows.WorkflowRuns.Any() &&
                 workflows.WorkflowRuns!.All(x => x.Status == WorkflowRunStatus.Completed);
-            
+
             if (!isCommitStatusCompleted)
             {
                 await Task.Delay(1000);
-            }   
+            }
         } while (!isCommitStatusCompleted);
     }
-    
+
     private async Task CleanupRepository()
     {
         var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
@@ -284,16 +323,16 @@ internal sealed class TestContext(
 
         return token;
     }
-    
+
     private static async Task<Octokit.GitHubClient> GetLegacyGitHubClient(ITestOutputHelper outputHelper)
     {
         var token = await GetGitHubToken(outputHelper);
-        
+
         var githubClient = new Octokit.GitHubClient(new ProductHeaderValue("renovate-test"), new InMemoryCredentialStore(new Octokit.Credentials(token)));
-        
+
         return githubClient;
     }
-    
+
     private static async Task<GitHubClient> GetGitHubClient(ITestOutputHelper outputHelper)
     {
         if (_sharedGitHubClient != null)
@@ -349,6 +388,6 @@ internal sealed class TestContext(
     public async ValueTask DisposeAsync()
     {
         await temporaryDirectory.DisposeAsync();
-        await CleanupRepository();
+        await this.CleanupRepository();
     }
 }
