@@ -112,6 +112,12 @@
       "matchPackageNames": ["/^Hangfire(\\.|$)/i"]
     },
     {
+      "groupName": "meziantou monorepo",
+      "description": "Group Gérald Barré's dependencies update in a single PR to avoid conflicts",
+      "matchManagers": ["nuget"],
+      "matchPackageNames": ["/^Meziantou\\./i"]
+    },
+    {
       "groupName": "mongodb monorepo",
       "description": "Group MongoDB dependencies update in a single PR to avoid conflicts",
       "matchManagers": ["nuget"],
