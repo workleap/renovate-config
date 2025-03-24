@@ -60,7 +60,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Mongo
                   Type: nuget
-                  Update: patch
+                  Update: minor
             - Title: chore(deps): update dotnet-sdk
               Labels:
                 - renovate
@@ -178,12 +178,12 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.AssertCommits(
             """
             - Message:
-                Update dependency dotnet-sdk to redacted
-                
+                Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
+
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message:
-                Update dependency Workleap.Extensions.Mongo to redacted
-                
+                Update dependency dotnet-sdk to redacted
+
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
             """);
@@ -577,7 +577,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Mongo
                   Type: nuget
-                  Update: patch
+                  Update: minor
               IsAutoMergeEnabled: true
             """);
     }
