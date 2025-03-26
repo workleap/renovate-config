@@ -57,6 +57,20 @@ on:
       - 'renovate/*'
 ```
 
+### Enabling Terraform updates for providers and modules
+
+Using the same process of extending the base configuration explained above, you can enable updates for Terraform modules including our Workleap blessed modules and Terraform providers.
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>workleap/renovate-config",
+    "github>workleap/renovate-config//terraform-module.json",
+    "github>workleap/renovate-config//terraform-provider.json",
+  ]
+}
+```
 
 ## System tests
 In order to run the system tests you will need the `workflow` scope on this repository.
