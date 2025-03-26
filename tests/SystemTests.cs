@@ -691,7 +691,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("terraform-module.json");
 
-        testContext.AddFile("main.tf", 
+        testContext.AddFile("main.tf",
             """
             module "network" {
               source  = "Azure/network/azurerm"
@@ -704,7 +704,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             }
             """);
 
-        testContext.AddFile("README.md", 
+        testContext.AddFile("README.md",
             """
             # Terraform Project
             
@@ -741,7 +741,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("terraform-provider.json");
 
-        testContext.AddFile("versions.tf", 
+        testContext.AddFile("versions.tf",
             """
             terraform {
               required_providers {
@@ -758,7 +758,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             }
             """);
 
-        testContext.AddFile("README.md", 
+        testContext.AddFile("README.md",
             """
             # Terraform Project
             
