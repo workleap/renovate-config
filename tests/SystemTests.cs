@@ -684,4 +684,110 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests("[]");
     }
+
+    [Fact]
+    public async Task Given_Terraform_Modules_Updates_Then_Groups_Them_In_Single_PR()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("terraform-module.json");
+
+        testContext.AddFile("main.tf", 
+            """
+            module "network" {
+              source  = "Azure/network/azurerm"
+              version = "3.5.0"
+            }
+            
+            module "compute" {
+              source  = "Azure/compute/azurerm"
+              version = "5.1.0"
+            }
+            """);
+
+        testContext.AddFile("README.md", 
+            """
+            # Terraform Project
+            
+            This is a sample terraform project using Azure modules.
+            
+            ## Requirements
+            
+            | Name | Version |
+            |------|---------|
+            | terraform | >= 1.0 |
+            """);
+
+        await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update terraform module minor and patch upgrades
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Azure/compute/azurerm
+                  Type: terraform-module
+                  Update: minor
+                - Package: Azure/network/azurerm
+                  Type: terraform-module
+                  Update: minor
+            """);
+    }
+
+    [Fact]
+    public async Task Given_Terraform_Providers_Updates_Then_Groups_Them_In_Single_PR()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+        testContext.UseRenovateFile("terraform-provider.json");
+
+        testContext.AddFile("versions.tf", 
+            """
+            terraform {
+              required_providers {
+                azurerm = {
+                  source  = "hashicorp/azurerm"
+                  version = "3.0.2"
+                }
+                azuread = {
+                  source  = "hashicorp/azuread"
+                  version = "2.15.0"
+                }
+              }
+              required_version = ">= 1.1.0"
+            }
+            """);
+
+        testContext.AddFile("README.md", 
+            """
+            # Terraform Project
+            
+            This is a sample terraform project using Azure providers.
+            
+            ## Requirements
+            
+            | Name | Version |
+            |------|---------|
+            | terraform | >= 1.1.0 |
+            | azurerm | 3.0.2 |
+            | azuread | 2.15.0 |
+            """);
+
+        await testContext.PushFilesOnDefaultBranch();
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update terraform provider minor and patch upgrades
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: hashicorp/azuread
+                  Type: terraform-provider
+                  Update: minor
+                - Package: hashicorp/azurerm
+                  Type: terraform-provider
+                  Update: minor
+            """);
+    }
 }
