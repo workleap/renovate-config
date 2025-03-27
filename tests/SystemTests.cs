@@ -722,16 +722,20 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): Update Terraform module minor and patch upgrades
+            - Title: Update Terraform Azure/compute/azurerm to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Azure/compute/azurerm
-                  Type: terraform-module
+                  Type: module
                   Update: minor
+            - Title: Update Terraform Azure/network/azurerm to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
                 - Package: Azure/network/azurerm
-                  Type: terraform-module
-                  Update: minor
+                  Type: module
+                  Update: major
             """);
     }
 
@@ -778,16 +782,26 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): Update Terraform provider minor and patch upgrades
+            - Title: Update Terraform provider minor and patch upgrades
               Labels:
                 - renovate
               PackageUpdatesInfos:
-                - Package: hashicorp/azuread
-                  Type: terraform-provider
+                - Package: azuread
+                  Type: required_provider
                   Update: minor
-                - Package: hashicorp/azurerm
-                  Type: terraform-provider
+                - Package: azurerm
+                  Type: required_provider
                   Update: minor
+            - Title: Update Terraform provider minor and patch upgrades (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: azuread
+                  Type: required_provider
+                  Update: major
+                - Package: azurerm
+                  Type: required_provider
+                  Update: major
             """);
     }
 }
