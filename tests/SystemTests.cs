@@ -722,7 +722,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update terraform module minor and patch upgrades
+            - Title: chore(deps): Update Terraform module minor and patch upgrades
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -778,7 +778,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update terraform provider minor and patch upgrades
+            - Title: chore(deps): Update Terraform provider minor and patch upgrades
               Labels:
                 - renovate
               PackageUpdatesInfos:
