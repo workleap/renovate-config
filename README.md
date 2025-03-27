@@ -66,7 +66,8 @@ Using the same process of extending the base configuration explained above, you 
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "github>workleap/renovate-config",
-    "github>workleap/renovate-config//terraform-module.json",
+    "github>workleap/renovate-config/terraform-module.json",
+
     "github>workleap/renovate-config//terraform-provider.json",
   ]
 }
