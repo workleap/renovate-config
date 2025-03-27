@@ -1,0 +1,15 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "description": "Upgrade all terraform providers with minor and patch upgrades",
+    "groupName": "Terraform provider minor and patch upgrades",
+    "groupSlug": "terraform-provider-minor-patch",
+    "postUpgradeTasks": {
+      "commands": [
+        "terraform-docs markdown {{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
+      ],
+      "fileFilters": [
+        "**/README.md"
+      ],
+      "executionMode": "update"
+    }
+  }
