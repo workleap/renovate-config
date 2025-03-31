@@ -30,6 +30,12 @@
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "configMigration": true,
   "minimumReleaseAge": "3 days",
+  "azure-pipelines": {
+    "fileMatch": [
+      "(^|/)(\\.azuredevops|\\.ado|pipelines)/.+\\.ya?ml$"
+    ],
+    "enabled": true
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -124,10 +130,18 @@
       "matchPackageNames": ["/^MongoDB\\./i"]
     },
     {
-      "groupName": "pipeline dependencies",
+      "groupName": "github pipeline dependencies",
       "matchManagers": [
         "github-actions"
       ]
+    },
+    {
+      "groupName": "azure devops pipeline dependencies",
+      "description": "Group Azure DevOps pipeline dependencies update in a single PR to avoid conflicts. Pin major version only, which is ADO's default behavior.",
+      "matchDatasources": [
+        "azure-pipelines-tasks"
+      ],
+      "extractVersion": "^(?<version>\\d+)"
     },
     {
       "groupName": "npm",
