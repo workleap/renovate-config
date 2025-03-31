@@ -13,7 +13,8 @@
     "custom.regex",
     "terraform",
     "npm",
-    "nuget"
+    "nuget",
+    "azure-pipelines"
   ],
   "extends": [
     "config:recommended",
