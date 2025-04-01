@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Upgrade all terraform providers with minor and patch upgrades",
-  "matchDatasources": ["terraform-provider"],
+  "packageRules": [
+    {
+      "matchDatasources": ["terraform-provider"]
+    }
+  ],
   "groupName": "Terraform provider minor and patch upgrades",
   "groupSlug": "terraform-provider-minor-patch",
   "postUpgradeTasks": {
