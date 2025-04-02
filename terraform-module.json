@@ -1,8 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Upgrade all terraform modules with minor and patch upgrades",
-  "groupName": "Terraform module minor and patch upgrades",
-  "groupSlug": "terraform-module-minor-patch",
   "postUpgradeTasks": {
     "commands": [
       "terraform-docs markdown {{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
@@ -30,6 +28,11 @@
         ],
         "executionMode": "update"
       }
+    },
+    {
+      "matchDatasources": ["terraform-module"],
+      "groupName": "Terraform module minor and patch upgrades",
+      "groupSlug": "terraform-module-minor-patch"
     }
   ]
 }

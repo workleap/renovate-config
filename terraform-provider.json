@@ -3,11 +3,15 @@
   "description": "Upgrade all terraform providers with minor and patch upgrades",
   "packageRules": [
     {
-      "matchDatasources": ["terraform-provider"]
+      "matchDatasources": ["terraform-provider"],
+      "groupName": "Terraform provider minor and patch upgrades",
+      "groupSlug": "terraform-provider-minor-patch",
+      "extends": [
+        ":automergePatch",
+        ":automergeMinor"
+      ]
     }
   ],
-  "groupName": "Terraform provider minor and patch upgrades",
-  "groupSlug": "terraform-provider-minor-patch",
   "postUpgradeTasks": {
     "commands": [
       "terraform-docs markdown {{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
@@ -16,9 +20,5 @@
       "**/README.md"
     ],
     "executionMode": "update"
-  },
-  "extends": [
-    ":automergePatch",
-    ":automergeMinor"
-  ]
+  }
 }
