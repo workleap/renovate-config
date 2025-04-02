@@ -16,9 +16,7 @@
     "commands": [
       "terraform-docs markdown {{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
     ],
-    "fileFilters": [
-      "**/README.md"
-    ],
+    "fileFilters": ["**/*.tf", "**/*.tfvars", "**/*.tftest"],
     "executionMode": "update"
   }
 }
