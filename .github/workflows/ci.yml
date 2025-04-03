@@ -19,7 +19,15 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
 
+      - name: Get Secrets from Azure Key Vault
+        id: get_secrets
+        run: |
+          # Set env.GH_TOKEN
+          GH_TOKEN=$(az keyvault secret show --vault-name ${{ vars.IDP_CICD_KEYVAULT_NAME }} --name "renovate-config-github-pat" --query value -o tsv)
+          echo "::add-mask::$GH_TOKEN"
+          echo "gh_token=$GH_TOKEN" >> $GITHUB_OUTPUT
+
       - name: Test with the dotnet CLI
         run: dotnet test tests 
         env:
-          GH_TOKEN: ${{secrets.TEST_GITHUB_MG}}
+          GH_TOKEN: ${{secrets.GH_TOKEN}}
