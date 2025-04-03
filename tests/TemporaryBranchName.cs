@@ -3,7 +3,7 @@ namespace renovate_config.tests;
 internal abstract class TemporaryBranchName
 {
     public const string DateFormat = "yyyyMMddHHmmss";
-    public static readonly TimeSpan MaximumAge = TimeSpan.FromDays(3);
+    public static readonly TimeSpan MaximumAge = TimeSpan.FromHours(2);
     protected const char Slash = '/';
     protected const char Underscore = '_';
 

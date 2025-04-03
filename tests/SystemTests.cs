@@ -38,7 +38,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             }
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
@@ -132,7 +132,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             }
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
@@ -207,7 +207,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -258,7 +258,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
@@ -314,7 +314,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             }
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -372,7 +372,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
@@ -433,7 +433,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
@@ -484,7 +484,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
@@ -521,7 +521,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
 
         await testContext.RunRenovate();
         await testContext.WaitForBranchPolicyChecksToSucceed();
@@ -561,7 +561,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
 
         await testContext.RunRenovate();
         await testContext.WaitForBranchPolicyChecksToSucceed();
@@ -610,7 +610,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             }
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         // Need to run renovate a second time so that branch is merged
@@ -679,7 +679,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             </Project>
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests("[]");
@@ -717,7 +717,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             | terraform | >= 1.0 |
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
@@ -777,7 +777,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             | azuread | 2.15.0 |
             """);
 
-        await testContext.PushFilesOnDefaultBranch();
+        await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
 
         await testContext.AssertPullRequests(
