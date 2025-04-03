@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, idp]
 
     steps:
       - uses: actions/checkout@v4
