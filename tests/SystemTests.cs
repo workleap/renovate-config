@@ -49,7 +49,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """
             - Title: chore(deps): update dependency system.text.json to redacted
               Labels:
-                - security
+                - renovate
+              PackageUpdatesInfos:
+                - Package: System.Text.Json
+                  Type: nuget
+                  Update: patch
+            - Title: chore(deps): update dependency system.text.json to redacted
+              Labels:
+                - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
                   Type: nuget
@@ -178,11 +185,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.AssertCommits(
             """
             - Message:
-                Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
+                Update dependency dotnet-sdk to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message:
-                Update dependency dotnet-sdk to redacted
+                Update dependency System.Text.Json to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
@@ -382,13 +389,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency System.Text.Json to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: System.Text.Json
-                  Type: nuget
-                  Update: major
             - Title: Update microsoft (major)
               Labels:
                 - renovate
@@ -400,6 +400,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: major
                 - Package: Microsoft.Azure.AppConfiguration.AspNetCore
+                  Type: nuget
+                  Update: major
+                - Package: System.Text.Json
                   Type: nuget
                   Update: major
             """);
@@ -539,6 +542,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: patch
               IsAutoMergeEnabled: true
+            - Title: Update dependency System.Text.Json to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: System.Text.Json
+                  Type: nuget
+                  Update: major
             """);
     }
 
