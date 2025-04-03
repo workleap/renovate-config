@@ -782,16 +782,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update Terraform provider minor and patch upgrades
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: azuread
-                  Type: required_provider
-                  Update: minor
-                - Package: azurerm
-                  Type: required_provider
-                  Update: minor
             - Title: Update Terraform provider minor and patch upgrades (major)
               Labels:
                 - renovate
@@ -802,6 +792,17 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: azurerm
                   Type: required_provider
                   Update: major
+            - Title: Update Terraform provider minor and patch upgrades (minor)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: azuread
+                  Type: required_provider
+                  Update: minor
+                - Package: azurerm
+                  Type: required_provider
+                  Update: minor
+              IsAutoMergeEnabled: true
             """);
     }
 }
