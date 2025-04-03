@@ -43,4 +43,4 @@ jobs:
       - name: Test with the dotnet CLI
         run: dotnet test tests 
         env:
-          GH_TOKEN: ${{secrets.get_secrets.outputs.gh_token}}
+          GH_TOKEN: ${{steps.get_secrets.outputs.gh_token}}
