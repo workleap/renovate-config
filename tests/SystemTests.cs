@@ -815,4 +815,45 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               IsAutoMergeEnabled: true
             """);
     }
+
+    [Fact]
+    public async Task Given_Azure_Pipelines_Tasks_Updates_Then_Groups_Them_In_Single_PR()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        testContext.AddFile(Path.Combine(".ado", "my-pipeline.yml"),
+            """
+            steps:
+            - task: Bash@2 # Current is Bash@3 as of 2025-04-04
+              inputs:
+                targetType: inline
+                script: echo "Hello, world!"
+            """);
+
+        testContext.AddFile(Path.Combine("devops", "pipelines", "another-pipeline.yml"),
+            """
+            steps:
+            - task: PowerShell@1 # Current is PowerShell@2 as of 2025-04-04
+              inputs:
+                scriptType: inlineScript
+                inlineScript: Write-Host "Hello, world!"
+            """);
+
+        await testContext.PushFilesOnTemporaryBranch();
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update azure devops pipeline dependencies (major)
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Bash
+                  Type: major
+                  Update: ->
+                - Package: PowerShell
+                  Type: major
+                  Update: ->
+            """);
+    }
 }

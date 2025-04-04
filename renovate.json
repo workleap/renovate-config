@@ -3,6 +3,5 @@
   "extends": [
     "github>workleap/renovate-config",
     "github>workleap/renovate-config:all-automerge.json"
-  ],
-  "allowedCommands": ["^terraform-docs markdown"]
+  ]
 }
