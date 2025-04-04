@@ -12,47 +12,65 @@ using Meziantou.Framework.InlineSnapshotTesting;
 using Octokit;
 using Octokit.Internal;
 using Xunit.Abstractions;
-using GitHubClient = GitHub.GitHubClient;
+
+using NewGitHubClient = GitHub.GitHubClient;
+using OldGitHubClient = Octokit.GitHubClient;
 
 namespace renovate_config.tests;
 
 internal sealed class TestContext(
     ITestOutputHelper outputHelper,
-    TemporaryDirectory temporaryDirectory,
-    GitHubClient gitHubClient,
-    Octokit.GitHubClient legacyGitHubClient) : IAsyncDisposable
+    TemporaryDirectory repositoryDirectory,
+    TemporaryFeatureBranchName targetBranchName,
+    NewGitHubClient newGitHubClient,
+    OldGitHubClient oldGitHubClient) : IAsyncDisposable
 {
-    private static GitHubClient? _sharedGitHubClient;
+    private static NewGitHubClient? _sharedNewGitHubClient;
+    private static OldGitHubClient? _sharedOldGitHubClient;
 
-    private const string DefaultBranchName = "main";
     private const string RepositoryOwner = "workleap";
     private const string RepositoryName = "renovate-config-test";
-    private readonly string _repoPath = temporaryDirectory.FullPath;
+    private readonly string _repoPath = repositoryDirectory.FullPath;
 
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
     {
-        var gitHubClient = await GetGitHubClient(outputHelper);
-        var legacyGitHubClient = await GetLegacyGitHubClient(outputHelper);
+        var newGitHubClient = await GetNewGitHubClient(outputHelper);
+        var oldGitHubClient = await GetOldGitHubClient(outputHelper);
 
         await ExecuteCommand(outputHelper, "gh", ["auth", "status"]);
 
-        var temporaryDirectory = TemporaryDirectory.Create();
-        var repoPath = temporaryDirectory.FullPath;
-        await ExecuteCommand(outputHelper, "git", ["-C", repoPath, "init", "--initial-branch=main"]);
+        TemporaryDirectory? repositoryDirectory = null;
+        try
+        {
+            var targetBranchName = new TemporaryFeatureBranchName();
+            outputHelper.WriteLine($"Target branch name: {targetBranchName}");
 
-        CopyRenovateFile(temporaryDirectory);
+            repositoryDirectory = TemporaryDirectory.Create();
+            await ExecuteCommand(outputHelper, "git", ["-C", repositoryDirectory.FullPath, "init", $"--initial-branch={targetBranchName}"]);
 
-        return new TestContext(outputHelper, temporaryDirectory, gitHubClient, legacyGitHubClient);
+            CopyRenovateFile(repositoryDirectory);
+
+            return new TestContext(outputHelper, repositoryDirectory, targetBranchName, newGitHubClient, oldGitHubClient);
+        }
+        catch
+        {
+            if (repositoryDirectory != null)
+            {
+                await repositoryDirectory.DisposeAsync();
+            }
+
+            throw;
+        }
     }
 
     public void AddFile(string path, string content)
     {
-        temporaryDirectory.CreateTextFile(path, content);
+        repositoryDirectory.CreateTextFile(path, content);
     }
 
     public void AddInternalDeveloperPlatformCodeOwnersFile()
     {
-        temporaryDirectory.CreateTextFile("CODEOWNERS",
+        repositoryDirectory.CreateTextFile("CODEOWNERS",
             """
             * @workleap/internal-developer-platform
             """);
@@ -60,7 +78,7 @@ internal sealed class TestContext(
 
     public void AddSuccessfulWorkflowFileToSatisfyBranchPolicy()
     {
-        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml",
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
             /*lang=yaml*/"""
             name: CI
             on:
@@ -76,14 +94,14 @@ internal sealed class TestContext(
                     runs-on: ubuntu-latest
                     steps:
                         - name: Dummy successful step
-                          run: sleep 1
+                          run: echo "Hello world"
             """
             );
     }
 
     public void AddFailingWorklowFileToSatisfyBranchPolicy()
     {
-        temporaryDirectory.CreateTextFile(".github/workflows/ci.yml",
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
             /*lang=yaml*/"""
             name: CI
             on:
@@ -104,7 +122,7 @@ internal sealed class TestContext(
         );
     }
 
-    public async Task PushFilesOnDefaultBranch()
+    public async Task PushFilesOnTemporaryBranch()
     {
         var token = await GetGitHubToken(outputHelper);
         var gitUrl = $"https://{token}@github.com/workleap/renovate-config-test";
@@ -113,13 +131,13 @@ internal sealed class TestContext(
 
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "add", "."]);
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
-        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "push", gitUrl, DefaultBranchName + ":" + DefaultBranchName, "--force"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "push", gitUrl, $"{targetBranchName}:{targetBranchName}"]);
     }
 
     public void UseRenovateFile(string filename)
     {
         var gitRoot = GetGitRoot();
-        var filePath = temporaryDirectory.FullPath / "renovate.json";
+        var filePath = repositoryDirectory.FullPath / "renovate.json";
 
         if (File.Exists(filePath))
         {
@@ -142,6 +160,9 @@ internal sealed class TestContext(
                 "-e", "LOG_LEVEL=debug",
                 "-e", "RENOVATE_PRINT_CONFIG=true",
                 "-e", $"RENOVATE_TOKEN={token}",
+                "-e", $"RENOVATE_BRANCH_PREFIX={new TemporaryRenovateBranchName(targetBranchName).Prefix}",
+                "-e", $"RENOVATE_BASE_BRANCHES={targetBranchName.Name}",
+                "-e", "RENOVATE_USE_BASE_BRANCH_CONFIG=merge",
                 "-e", "RENOVATE_RECREATE_WHEN=always",
                 "-e", "RENOVATE_PR_HOURLY_LIMIT=0",
                 "-e", "RENOVATE_PR_CONCURRENT_LIMIT=0",
@@ -199,7 +220,10 @@ internal sealed class TestContext(
 
     private async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
     {
-        var pullRequests = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Pulls.GetAsync() ?? [];
+        var pullRequests = await newGitHubClient.Repos[RepositoryOwner][RepositoryName].Pulls.GetAsync(x =>
+        {
+            x.QueryParameters.Base = targetBranchName.Name;
+        }) ?? [];
 
         var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
 
@@ -238,7 +262,10 @@ internal sealed class TestContext(
 
     private async Task<IEnumerable<CommitInfo>> GetCommits()
     {
-        var commits = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Commits.GetAsync() ?? [];
+        var commits = await newGitHubClient.Repos[RepositoryOwner][RepositoryName].Commits.GetAsync(x =>
+        {
+            x.QueryParameters.Sha = targetBranchName.Name;
+        }) ?? [];
 
         var commitInfos = new List<CommitInfo>(commits.Count);
 
@@ -254,11 +281,12 @@ internal sealed class TestContext(
 
     public async Task WaitForBranchPolicyChecksToSucceed()
     {
-        var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
+        var branches = await newGitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
 
         foreach (var branch in branches)
         {
-            if (branch.Name != DefaultBranchName)
+            var branchName = branch.Name!;
+            if (TemporaryRenovateBranchName.TryParse(branchName, out var renovateBranchName) && renovateBranchName.Id == targetBranchName.Id)
             {
                 await this.WaitForCommitAssociatedWorkflowsToSucceed(branch.Commit!.Sha!);
             }
@@ -273,7 +301,7 @@ internal sealed class TestContext(
 
         do
         {
-            var workflows = await legacyGitHubClient.Actions.Workflows.Runs.List(RepositoryOwner, RepositoryName,
+            var workflows = await oldGitHubClient.Actions.Workflows.Runs.List(RepositoryOwner, RepositoryName,
                 new WorkflowRunsRequest { HeadSha = commitSha });
 
             isCommitStatusCompleted =
@@ -289,19 +317,31 @@ internal sealed class TestContext(
 
     private async Task CleanupRepository()
     {
-        var branches = await gitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
+        var branches = await newGitHubClient.Repos[RepositoryOwner][RepositoryName].Branches.GetAsync() ?? [];
+
         foreach (var branch in branches)
         {
-            outputHelper.WriteLine($"Deleting branch: {branch.Name}");
+            await this.CleanupBranch(branch.Name!);
+        }
+    }
+
+    private async Task CleanupBranch(string branchName)
+    {
+        var isExpiredFeatureBranch = TemporaryFeatureBranchName.TryParse(branchName, out var tmpFeatureBranchName) && tmpFeatureBranchName.HasExpired();
+        var isExpiredRenovateBranch = TemporaryRenovateBranchName.TryParse(branchName, out var tmpRenovateBranchName) && tmpRenovateBranchName.HasExpired();
+
+        if (isExpiredFeatureBranch || isExpiredRenovateBranch)
+        {
+            outputHelper.WriteLine($"Deleting branch {branchName}");
 
             try
             {
-                await gitHubClient.Repos[RepositoryOwner][RepositoryName].Git.Refs[$"heads/{branch.Name}"].DeleteAsync();
+                await newGitHubClient.Repos[RepositoryOwner][RepositoryName].Git.Refs[$"heads/{branchName}"].DeleteAsync();
             }
             catch (Exception)
             {
                 // Ignore if it doesn't exist
-                outputHelper.WriteLine($"Deleting branch was not found: {branch.Name}");
+                outputHelper.WriteLine($"Deleting branch was not found: {branchName}");
             }
         }
     }
@@ -324,28 +364,32 @@ internal sealed class TestContext(
         return token;
     }
 
-    private static async Task<Octokit.GitHubClient> GetLegacyGitHubClient(ITestOutputHelper outputHelper)
+    private static async Task<OldGitHubClient> GetOldGitHubClient(ITestOutputHelper outputHelper)
     {
+        if (_sharedOldGitHubClient != null)
+        {
+            return _sharedOldGitHubClient;
+        }
+
         var token = await GetGitHubToken(outputHelper);
+        _sharedOldGitHubClient = new OldGitHubClient(new ProductHeaderValue("renovate-test"), new InMemoryCredentialStore(new Octokit.Credentials(token)));
 
-        var githubClient = new Octokit.GitHubClient(new ProductHeaderValue("renovate-test"), new InMemoryCredentialStore(new Octokit.Credentials(token)));
-
-        return githubClient;
+        return _sharedOldGitHubClient;
     }
 
-    private static async Task<GitHubClient> GetGitHubClient(ITestOutputHelper outputHelper)
+    private static async Task<NewGitHubClient> GetNewGitHubClient(ITestOutputHelper outputHelper)
     {
-        if (_sharedGitHubClient != null)
+        if (_sharedNewGitHubClient != null)
         {
-            return _sharedGitHubClient;
+            return _sharedNewGitHubClient;
         }
 
         var token = await GetGitHubToken(outputHelper);
         var tokenProvider = new TokenProvider(token);
         var adapter = RequestAdapter.Create(new TokenAuthProvider(tokenProvider));
-        _sharedGitHubClient = new GitHubClient(adapter);
+        _sharedNewGitHubClient = new NewGitHubClient(adapter);
 
-        return _sharedGitHubClient;
+        return _sharedNewGitHubClient;
     }
 
     private static void CopyRenovateFile(TemporaryDirectory temporaryDirectory)
@@ -387,7 +431,7 @@ internal sealed class TestContext(
 
     public async ValueTask DisposeAsync()
     {
-        await temporaryDirectory.DisposeAsync();
+        await repositoryDirectory.DisposeAsync();
         await this.CleanupRepository();
     }
 }
