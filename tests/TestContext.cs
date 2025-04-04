@@ -131,7 +131,7 @@ internal sealed class TestContext(
 
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "add", "."]);
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
-        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "push", gitUrl, $"{targetBranchName}:{targetBranchName}", "--force"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "push", gitUrl, $"{targetBranchName}:{targetBranchName}"]);
     }
 
     public void UseRenovateFile(string filename)
