@@ -30,6 +30,14 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '^22.11.0'
+      
+      # - shell: bash
+      #   run: |
+      #     npm install --global npx
+
       - name: Get Secrets from Azure Key Vault
         id: get_secrets
         run: |

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -151,54 +152,59 @@ internal sealed class TestContext(
     {
         var token = await GetGitHubToken(outputHelper);
 
-        await ExecuteCommand(
-            outputHelper,
-            "npx",
-            [
-                "renovate",
-                "workleap/renovate-config-test"
-            ],
-            envVariables:
-            [
-                new KeyValuePair<string, string>("LOG_LEVEL", "debug"),
-                new KeyValuePair<string, string>("RENOVATE_PRINT_CONFIG", "true"),
-                new KeyValuePair<string, string>("RENOVATE_TOKEN", token),
-                new KeyValuePair<string, string>("RENOVATE_BRANCH_PREFIX", new TemporaryRenovateBranchName(targetBranchName).Prefix),
-                new KeyValuePair<string, string>("RENOVATE_BASE_BRANCHES", targetBranchName.Name),
-                new KeyValuePair<string, string>("RENOVATE_USE_BASE_BRANCH_CONFIG", "merge"),
-                new KeyValuePair<string, string>("RENOVATE_RECREATE_WHEN", "always"),
-                new KeyValuePair<string, string>("RENOVATE_PR_HOURLY_LIMIT", "0"),
-                new KeyValuePair<string, string>("RENOVATE_PR_CONCURRENT_LIMIT", "0"),
-                new KeyValuePair<string, string>("RENOVATE_BRANCH_CONCURRENT_LIMIT", "0"),
-                new KeyValuePair<string, string>("RENOVATE_LABELS", "[\"renovate\"]"),
-                new KeyValuePair<string, string>("RENOVATE_INHERIT_CONFIG_FILE_NAME", "not-renovate.json"),
-                new KeyValuePair<string, string>("RENOVATE_REPOSITORIES", "[\"https://github.com/workleap/renovate-config-test\"]"),
-            ]);
-
-        // await ExecuteCommand(
-        //     outputHelper,
-        //     "docker",
-        //     [
-        //         "run",
-        //         "--rm",
-        //         "-e", "LOG_LEVEL=debug",
-        //         "-e", "RENOVATE_PRINT_CONFIG=true",
-        //         "-e", $"RENOVATE_TOKEN={token}",
-        //         "-e", $"RENOVATE_BRANCH_PREFIX={new TemporaryRenovateBranchName(targetBranchName).Prefix}",
-        //         "-e", $"RENOVATE_BASE_BRANCHES={targetBranchName.Name}",
-        //         "-e", "RENOVATE_USE_BASE_BRANCH_CONFIG=merge",
-        //         "-e", "RENOVATE_RECREATE_WHEN=always",
-        //         "-e", "RENOVATE_PR_HOURLY_LIMIT=0",
-        //         "-e", "RENOVATE_PR_CONCURRENT_LIMIT=0",
-        //         "-e", "RENOVATE_BRANCH_CONCURRENT_LIMIT=0",
-        //         "-e", "RENOVATE_LABELS=[\"renovate\"]",
-        //         "-e", "RENOVATE_INHERIT_CONFIG_FILE_NAME=not-renovate.json",
-        //         "-e", "RENOVATE_REPOSITORIES=[\"https://github.com/workleap/renovate-config-test\"]",
-        //         "--pull", "always",
-        //         "renovate/renovate:latest",
-        //         "renovate",
-        //         "workleap/renovate-config-test"
-        //     ]);
+        try
+        {
+            await ExecuteCommand(
+                outputHelper,
+                "npx",
+                [
+                    "renovate",
+                    "workleap/renovate-config-test"
+                ],
+                envVariables:
+                [
+                    new KeyValuePair<string, string>("LOG_LEVEL", "debug"),
+                    new KeyValuePair<string, string>("RENOVATE_PRINT_CONFIG", "true"),
+                    new KeyValuePair<string, string>("RENOVATE_TOKEN", token),
+                    new KeyValuePair<string, string>("RENOVATE_BRANCH_PREFIX", new TemporaryRenovateBranchName(targetBranchName).Prefix),
+                    new KeyValuePair<string, string>("RENOVATE_BASE_BRANCHES", targetBranchName.Name),
+                    new KeyValuePair<string, string>("RENOVATE_USE_BASE_BRANCH_CONFIG", "merge"),
+                    new KeyValuePair<string, string>("RENOVATE_RECREATE_WHEN", "always"),
+                    new KeyValuePair<string, string>("RENOVATE_PR_HOURLY_LIMIT", "0"),
+                    new KeyValuePair<string, string>("RENOVATE_PR_CONCURRENT_LIMIT", "0"),
+                    new KeyValuePair<string, string>("RENOVATE_BRANCH_CONCURRENT_LIMIT", "0"),
+                    new KeyValuePair<string, string>("RENOVATE_LABELS", "[\"renovate\"]"),
+                    new KeyValuePair<string, string>("RENOVATE_INHERIT_CONFIG_FILE_NAME", "not-renovate.json"),
+                    new KeyValuePair<string, string>("RENOVATE_REPOSITORIES", "[\"https://github.com/workleap/renovate-config-test\"]"),
+                ]);
+        }
+        catch (Win32Exception ex) when (ex.Message.Contains("Target file or working directory doesn't exist"))
+        {
+            await ExecuteCommand(
+                outputHelper,
+                "docker",
+                [
+                    "run",
+                    "--rm",
+                    "-e", "LOG_LEVEL=debug",
+                    "-e", "RENOVATE_PRINT_CONFIG=true",
+                    "-e", $"RENOVATE_TOKEN={token}",
+                    "-e", $"RENOVATE_BRANCH_PREFIX={new TemporaryRenovateBranchName(targetBranchName).Prefix}",
+                    "-e", $"RENOVATE_BASE_BRANCHES={targetBranchName.Name}",
+                    "-e", "RENOVATE_USE_BASE_BRANCH_CONFIG=merge",
+                    "-e", "RENOVATE_RECREATE_WHEN=always",
+                    "-e", "RENOVATE_PR_HOURLY_LIMIT=0",
+                    "-e", "RENOVATE_PR_CONCURRENT_LIMIT=0",
+                    "-e", "RENOVATE_BRANCH_CONCURRENT_LIMIT=0",
+                    "-e", "RENOVATE_LABELS=[\"renovate\"]",
+                    "-e", "RENOVATE_INHERIT_CONFIG_FILE_NAME=not-renovate.json",
+                    "-e", "RENOVATE_REPOSITORIES=[\"https://github.com/workleap/renovate-config-test\"]",
+                    "--pull", "always",
+                    "renovate/renovate:latest",
+                    "renovate",
+                    "workleap/renovate-config-test"
+                ]);
+        }
     }
 
     [InlineSnapshotAssertion(nameof(expected))]
