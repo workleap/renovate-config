@@ -32,7 +32,7 @@ jobs:
         id: get_secrets
         run: |
           # Set env.GITHUB_PAT
-          GITHUB_PAT=$(az keyvault secret show --vault-name ${{ vars.IDP_CICD_KEYVAULT_NAME }} --name "renovate-github-pat" --query value -o tsv)
+          GITHUB_PAT=$(az keyvault secret show --vault-name ${{ vars.IDP_CICD_KEYVAULT_NAME }} --name "renovate-config-github-pat" --query value -o tsv)
           echo "::add-mask::$GITHUB_PAT"
           echo "github_pat=$GITHUB_PAT" >> $GITHUB_OUTPUT
 
