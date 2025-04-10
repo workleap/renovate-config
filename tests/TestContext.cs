@@ -43,7 +43,7 @@ internal sealed class TestContext(
         TemporaryDirectory? repositoryDirectory = null;
         try
         {
-            var targetBranchName = new TemporaryFeatureBranchName();
+            var targetBranchName = TemporaryFeatureBranchName.Create();
             outputHelper.WriteLine($"Target branch name: {targetBranchName}");
 
             repositoryDirectory = TemporaryDirectory.Create();

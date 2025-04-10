@@ -7,9 +7,16 @@ internal sealed class TemporaryFeatureBranchName : TemporaryBranchName
 {
     private const string FolderName = "feature";
 
-    public TemporaryFeatureBranchName()
-        : this(DateTimeOffset.UtcNow, Guid.NewGuid().ToString("N"))
+    private static int _branchCounter;
+    private static readonly object BranchCounterLock = new();
+
+    public static TemporaryFeatureBranchName Create()
     {
+        lock (BranchCounterLock)
+        {
+            _branchCounter++;
+            return new TemporaryFeatureBranchName(DateTimeOffset.UtcNow, _branchCounter.ToString());
+        }
     }
 
     private TemporaryFeatureBranchName(DateTimeOffset date, string id)
