@@ -34,9 +34,9 @@ jobs:
         with:
           node-version: '^22.11.0'
       
-      # - shell: bash
-      #   run: |
-      #     npm install --global npx
+      - shell: bash
+        run: |
+          npm install --global renovate
 
       - name: Get Secrets from Azure Key Vault
         id: get_secrets
