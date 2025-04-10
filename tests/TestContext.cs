@@ -159,7 +159,8 @@ internal sealed class TestContext(
                 "npx",
                 [
                     "renovate",
-                    "workleap/renovate-config-test"
+                    "workleap/renovate-config-test",
+                    "--base-dir", this._repoPath,
                 ],
                 envVariables:
                 [
