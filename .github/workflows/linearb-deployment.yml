@@ -9,5 +9,7 @@ jobs:
   linearb-release:
     uses: workleap/wl-reusable-workflows/.github/workflows/linearb-deployment.yml@main
     with:
-      environment: "release"
-    secrets: inherit
+      environment: "release"    
+    permissions:
+      id-token: write
+      contents: read
