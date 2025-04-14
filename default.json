@@ -1,6 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Workleap's default preset",
+  "gitAuthor": "github-actions[bot] <github-actions[bot]@users.noreply.github.com>",
   "labels": [
     "renovate"
   ],
