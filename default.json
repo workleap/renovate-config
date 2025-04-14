@@ -1,7 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Workleap's default preset",
-  "gitAuthor": "github-actions[bot] <github-actions[bot]@users.noreply.github.com>",
   "labels": [
     "renovate"
   ],
@@ -29,7 +28,7 @@
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
   "dependencyDashboard": false,
-  "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
+  "gitAuthor": "github-actions[bot] <github-actions[bot]@users.noreply.github.com>",
   "configMigration": true,
   "minimumReleaseAge": "3 days",
   "azure-pipelines": {
