@@ -29,6 +29,7 @@
   "branchConcurrentLimit": 0,
   "dependencyDashboard": false,
   "gitAuthor": "github-actions[bot] <github-actions[bot]@users.noreply.github.com>",
+
   "configMigration": true,
   "minimumReleaseAge": "3 days",
   "azure-pipelines": {
