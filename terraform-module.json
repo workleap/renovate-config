@@ -19,7 +19,7 @@
       "automerge": true,
       "postUpgradeTasks": {
         "commands": [
-          "terraform-docs markdown {{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
+          "terraform-docs markdown ./{{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
         ],
         "fileFilters": ["**/*.tf", "**/*.tfvars", "**/*.tftest"],
         "executionMode": "update"
