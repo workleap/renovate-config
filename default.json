@@ -151,6 +151,16 @@
         ":pinDependencies",
         ":pinDevDependencies"
       ]
+    },
+    {
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchPackageNames": [
+        "FluentAssertions"
+      ],
+      "allowedVersions": "< 8.0.0",
+      "description": "Licensing changed from V8 and onward to be commercial. See https://fluentassertions.com/releases/#800 for context."
     }
   ],
   "vulnerabilityAlerts": {
