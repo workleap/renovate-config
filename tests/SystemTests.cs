@@ -68,6 +68,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Workleap.Extensions.Mongo
                   Type: nuget
                   Update: minor
+            - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             - Title: chore(deps): update dotnet-sdk
               Labels:
                 - renovate
@@ -125,7 +132,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="System.Text.Json" Version="7.0.0" />
-                <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+                <PackageReference Include="Workleap.Extensions.Mongo" Version="2.0.0" />
               </ItemGroup>
             </Project>
             """);
@@ -429,7 +436,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
-                <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+                <PackageReference Include="Workleap.ComponentModel.DataAnnotations" Version="1.4.0" />
                 <PackageReference Include="Workleap.Extensions.Http.Authentication.ClientCredentialsGrant" Version="1.3.0" />
                 <PackageReference Include="Workleap.DomainEventPropagation.Abstractions" Version="0.2.0" />
               </ItemGroup>
@@ -566,7 +573,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
-                  <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+                  <PackageReference Include="Workleap.Extensions.Xunit" Version="1.0.2" />
               </ItemGroup>
             </Project>
             """);
@@ -581,11 +588,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency Workleap.Extensions.Mongo to redacted
+            - Title: Update dependency Workleap.Extensions.Xunit to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
-                - Package: Workleap.Extensions.Mongo
+                - Package: Workleap.Extensions.Xunit
                   Type: nuget
                   Update: minor
               IsAutoMergeEnabled: true
