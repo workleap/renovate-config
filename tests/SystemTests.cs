@@ -173,13 +173,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: System.Text.Json
                   Type: nuget
                   Update: major
-            - Title: Update dependency Workleap.Extensions.Mongo to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Workleap.Extensions.Mongo
-                  Type: nuget
-                  Update: major
             - Title: Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
               Labels:
                 - renovate
@@ -467,9 +460,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Workleap.Extensions.Http.Authentication.ClientCredentialsGrant
                   Type: nuget
                   Update: major
-                - Package: Workleap.Extensions.Mongo
-                  Type: nuget
-                  Update: major
             """);
 
         await testContext.AssertCommits(
@@ -601,13 +591,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: minor
               IsAutoMergeEnabled: true
-            - Title: Update dependency Workleap.Extensions.Mongo to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Workleap.Extensions.Mongo
-                  Type: nuget
-                  Update: major
             """);
     }
 
