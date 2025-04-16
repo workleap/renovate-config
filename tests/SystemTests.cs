@@ -132,7 +132,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
                 <PackageReference Include="System.Text.Json" Version="7.0.0" />
-                <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+                <PackageReference Include="Workleap.Extensions.Mongo" Version="2.0.0" />
               </ItemGroup>
             </Project>
             """);
@@ -206,7 +206,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update dependency dotnet-sdk to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -312,7 +311,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update microsoft to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -427,7 +425,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update microsoft to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -443,7 +440,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
-                <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+                <PackageReference Include="Workleap.ComponentModel.DataAnnotations" Version="1.4.0" />
                 <PackageReference Include="Workleap.Extensions.Http.Authentication.ClientCredentialsGrant" Version="1.3.0" />
                 <PackageReference Include="Workleap.DomainEventPropagation.Abstractions" Version="0.2.0" />
               </ItemGroup>
@@ -481,7 +478,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update workleap to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -518,7 +514,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update dependency System.Text.Json to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -583,7 +578,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """
             <Project Sdk="Microsoft.NET.Sdk">
               <ItemGroup>
-                  <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+                  <PackageReference Include="Workleap.Extensions.Xunit" Version="1.0.2" />
               </ItemGroup>
             </Project>
             """);
@@ -598,11 +593,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency Workleap.Extensions.Mongo to redacted
+            - Title: Update dependency Workleap.Extensions.Xunit to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
-                - Package: Workleap.Extensions.Mongo
+                - Package: Workleap.Extensions.Xunit
                   Type: nuget
                   Update: minor
               IsAutoMergeEnabled: true
@@ -773,7 +768,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """);
     }
 
-    [Fact]
+#pragma warning disable xUnit1004
+    [Fact(Skip = "This test is flaky, given it sometimes return two PRs, sometimes a single one; to be reviewed later on in IDP-3373.")]
+#pragma warning restore xUnit1004
     public async Task Given_Terraform_Providers_Updates_Then_Groups_Them_In_Single_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);

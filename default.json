@@ -151,6 +151,27 @@
         ":pinDependencies",
         ":pinDevDependencies"
       ]
+    },
+    {
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchPackageNames": [
+        "FluentAssertions"
+      ],
+      "allowedVersions": "< 8.0.0",
+      "description": "Licensing changed from V8 and onward to be commercial. See https://fluentassertions.com/releases/#800 for context."
+    },
+    {
+      "groupName": "prism monorepo",
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchSourceUrls": [
+        "https://github.com/PrismLibrary/Prism"
+      ],
+      "allowedVersions": "<= 8.1.97",
+      "description": "Licensing changed from v9 and onward to be commercial. See https://github.com/PrismLibrary/Prism/releases/tag/9.0.264-pre for context."
     }
   ],
   "vulnerabilityAlerts": {
