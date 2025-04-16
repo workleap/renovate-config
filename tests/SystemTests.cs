@@ -192,14 +192,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.AssertCommits(
             """
             - Message:
-                Update dependency dotnet-sdk to redacted
-
-                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message:
                 Update dependency System.Text.Json to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
+            - Message:
+                Update dependency dotnet-sdk to redacted
+
+                Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             """);
     }
 
@@ -305,7 +304,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update microsoft to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -420,7 +418,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update microsoft to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -471,7 +468,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update workleap to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -508,7 +504,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update dependency System.Text.Json to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
