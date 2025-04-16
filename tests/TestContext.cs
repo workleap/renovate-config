@@ -31,6 +31,7 @@ internal sealed class TestContext(
     private const string RepositoryOwner = "workleap";
     private const string RepositoryName = "renovate-config-test";
     private readonly string _repoPath = repositoryDirectory.FullPath;
+    private const string InitialCommitMessage = "IDP ScaffoldIt automated test";
 
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
     {
@@ -130,7 +131,7 @@ internal sealed class TestContext(
         await this.CleanupRepository();
 
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "add", "."]);
-        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", InitialCommitMessage]);
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "push", gitUrl, $"{targetBranchName}:{targetBranchName}"]);
     }
 
@@ -267,16 +268,15 @@ internal sealed class TestContext(
             x.QueryParameters.Sha = targetBranchName.Name;
         }) ?? [];
 
-        var commitInfos = new List<CommitInfo>(commits.Count);
+        return commits
+            .Select(c =>
+            {
+                var message = c.CommitProp!.Message ?? string.Empty;
 
-        foreach (var commit in commits)
-        {
-            var message = commit.CommitProp!.Message ?? string.Empty;
-
-            commitInfos.Add(new CommitInfo(message));
-        }
-
-        return commitInfos;
+                return new CommitInfo(message);
+            })
+            .Where(c => !string.Equals(InitialCommitMessage, c.Message, StringComparison.Ordinal))
+            .OrderBy(c => c.Message, StringComparer.Ordinal);
     }
 
     public async Task WaitForBranchPolicyChecksToSucceed()
