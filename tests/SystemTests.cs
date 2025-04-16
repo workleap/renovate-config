@@ -68,6 +68,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Workleap.Extensions.Mongo
                   Type: nuget
                   Update: minor
+            - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             - Title: chore(deps): update dotnet-sdk
               Labels:
                 - renovate
@@ -166,6 +173,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: System.Text.Json
                   Type: nuget
                   Update: major
+            - Title: Update dependency Workleap.Extensions.Mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             - Title: Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
               Labels:
                 - renovate
@@ -185,11 +199,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await testContext.AssertCommits(
             """
             - Message:
-                Update dependency dotnet-sdk to redacted
+                Update dependency System.Text.Json to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message:
-                Update dependency System.Text.Json to redacted
+                Update dependency dotnet-sdk to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
             - Message: IDP ScaffoldIt automated test
@@ -456,6 +470,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Workleap.Extensions.Http.Authentication.ClientCredentialsGrant
                   Type: nuget
                   Update: major
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             """);
 
         await testContext.AssertCommits(
@@ -589,6 +606,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: minor
               IsAutoMergeEnabled: true
+            - Title: Update dependency Workleap.Extensions.Mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             """);
     }
 
