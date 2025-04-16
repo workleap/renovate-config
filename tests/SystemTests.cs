@@ -751,7 +751,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             """);
     }
 
-    [Fact]
+#pragma warning disable xUnit1004
+    [Fact(Skip = "This test is flaky, given it sometimes return two PRs, sometimes a single one; to be reviewed later on in IDP-3373.")]
+#pragma warning restore xUnit1004
     public async Task Given_Terraform_Providers_Updates_Then_Groups_Them_In_Single_PR()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
