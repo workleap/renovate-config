@@ -30,6 +30,7 @@ internal sealed class TestContext(
 
     private const string RepositoryOwner = "workleap";
     private const string RepositoryName = "renovate-config-test";
+    private const string InitialCommitMessage = "IDP ScaffoldIt automated test";
     private readonly string _repoPath = repositoryDirectory.FullPath;
 
     public static async Task<TestContext> CreateAsync(ITestOutputHelper outputHelper)
@@ -78,8 +79,7 @@ internal sealed class TestContext(
 
     public void AddSuccessfulWorkflowFileToSatisfyBranchPolicy()
     {
-        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
-            /*lang=yaml*/"""
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml", """
             name: CI
             on:
                 pull_request: 
@@ -99,10 +99,9 @@ internal sealed class TestContext(
             );
     }
 
-    public void AddFailingWorklowFileToSatisfyBranchPolicy()
+    public void AddFailingWorkflowFileToSatisfyBranchPolicy()
     {
-        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
-            /*lang=yaml*/"""
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml", """
             name: CI
             on:
                 pull_request: 
@@ -130,7 +129,7 @@ internal sealed class TestContext(
         await this.CleanupRepository();
 
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "add", "."]);
-        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", "IDP ScaffoldIt automated test"]);
+        await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "-c", "user.email=idp@workleap.com", "-c", "user.name=IDP ScaffoldIt", "commit", "--message", InitialCommitMessage]);
         await ExecuteCommand(outputHelper, "git", ["-C", this._repoPath, "push", gitUrl, $"{targetBranchName}:{targetBranchName}"]);
     }
 
@@ -215,7 +214,7 @@ internal sealed class TestContext(
          */
         InlineSnapshot
             .WithSettings(settings => settings.ScrubLinesWithReplace(line => Regex.Replace(line, "(\\bto\\b).*|(\\([^)]*\\))", "to redacted")))
-            .Validate(commits, expected, filePath, lineNumber);
+            .Validate(commits.OrderBy(commit => commit.Message), expected, filePath, lineNumber);
     }
 
     private async Task<IEnumerable<PullRequestInfos>> GetPullRequests()
@@ -272,6 +271,11 @@ internal sealed class TestContext(
         foreach (var commit in commits)
         {
             var message = commit.CommitProp!.Message ?? string.Empty;
+            if (message == InitialCommitMessage)
+            {
+                // Ignore the initial commit message
+                continue;
+            }
 
             commitInfos.Add(new CommitInfo(message));
         }

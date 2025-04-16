@@ -68,6 +68,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Workleap.Extensions.Mongo
                   Type: nuget
                   Update: minor
+            - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             - Title: chore(deps): update dotnet-sdk
               Labels:
                 - renovate
@@ -166,6 +173,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: System.Text.Json
                   Type: nuget
                   Update: major
+            - Title: Update dependency Workleap.Extensions.Mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             - Title: Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
               Labels:
                 - renovate
@@ -192,7 +206,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update dependency System.Text.Json to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -298,7 +311,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update microsoft to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -413,7 +425,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update microsoft to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -456,6 +467,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: Workleap.Extensions.Http.Authentication.ClientCredentialsGrant
                   Type: nuget
                   Update: major
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             """);
 
         await testContext.AssertCommits(
@@ -464,7 +478,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update workleap to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -501,7 +514,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 Update dependency System.Text.Json to redacted
 
                 Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
-            - Message: IDP ScaffoldIt automated test
             """);
     }
 
@@ -511,7 +523,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("microsoft-automerge.json");
 
-        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+        testContext.AddFailingWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
@@ -558,7 +570,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("workleap-automerge.json");
 
-        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+        testContext.AddFailingWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
@@ -589,6 +601,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: nuget
                   Update: minor
               IsAutoMergeEnabled: true
+            - Title: Update dependency Workleap.Extensions.Mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+                  Type: nuget
+                  Update: major
             """);
     }
 
@@ -598,7 +617,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("all-automerge.json");
 
-        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+        testContext.AddFailingWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddFile("project.csproj", /*lang=xml*/
             """
@@ -707,7 +726,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               source  = "Azure/network/azurerm"
               version = "3.5.0"
             }
-            
+
             module "compute" {
               source  = "Azure/compute/azurerm"
               version = "5.1.0"
@@ -717,11 +736,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         testContext.AddFile("README.md",
             """
             # Terraform Project
-            
+
             This is a sample terraform project using Azure modules.
-            
+
             ## Requirements
-            
+
             | Name | Version |
             |------|---------|
             | terraform | >= 1.0 |
@@ -775,11 +794,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         testContext.AddFile("README.md",
             """
             # Terraform Project
-            
+
             This is a sample terraform project using Azure providers.
-            
+
             ## Requirements
-            
+
             | Name | Version |
             |------|---------|
             | terraform | >= 1.1.0 |
