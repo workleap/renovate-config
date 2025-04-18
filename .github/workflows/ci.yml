@@ -5,21 +5,45 @@ on:
     branches: ["main"]
 
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true    
+
+# We are using OpenID Connect to authenticate with Azure with secret.
+# https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-azure
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   main:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, idp]
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '^22.11.0'
+      
+      - shell: bash
+        run: |
+          npm install --global renovate
+
+      - name: Get Secret
+        id: get_secret
+        uses: workleap/wl-reusable-workflows/retrieve-managed-secret@feature/idp-3311-shared-action
+        with:
+          azure-client-id: ${{ vars.AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          azure-subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          keyvault-name: ${{ vars.IDP_CICD_KEYVAULT_NAME }}
+          secret-name: renovate-github-pat
+
       - uses: actions/setup-dotnet@v4
 
       - name: Test with the dotnet CLI
         run: dotnet test tests 
         env:
-          GH_TOKEN: ${{secrets.TEST_GITHUB_MG}}
+          GH_TOKEN: ${{steps.get_secret.outputs.secret}}
