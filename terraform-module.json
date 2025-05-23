@@ -27,6 +27,13 @@
     },
     {
       "matchDatasources": ["terraform-module"],
+      "matchPackageNames": ["terraform-workleap-enterprise-azure-governance"],
+      "groupName": "automerge specific terraform module",
+      "matchUpdateTypes": ["minor", "patch"], 
+      "automerge": true
+    },
+    {
+      "matchDatasources": ["terraform-module"],
       "groupName": "Terraform module minor and patch upgrades",
       "groupSlug": "terraform-module-minor-patch"
     }
