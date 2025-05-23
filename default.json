@@ -32,8 +32,8 @@
   "configMigration": true,
   "minimumReleaseAge": "3 days",
   "azure-pipelines": {
-    "fileMatch": [
-      "(^|/)(\\.azuredevops|\\.ado|pipelines)/.+\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)(\\.azuredevops|\\.ado|pipelines)/.+\\.ya?ml$/"
     ],
     "enabled": true
   },
@@ -41,7 +41,7 @@
     {
       "customType": "regex",
       "description": "nuspec files manager",
-      "fileMatch": [
+      "managerFilePatterns": [
         "\\.nuspec$"
       ],
       "matchStringsStrategy": "any",

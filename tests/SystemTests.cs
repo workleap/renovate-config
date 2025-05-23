@@ -376,7 +376,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="1.0.2" />
                 <PackageReference Include="microsoft.AspNetCore.Authentication.OpenIdConnect" Version="7.0.0" />
                 <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="7.0.0" />
-                <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="3.3.4">
+                <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="4.14.0">
                   <PrivateAssets>all</PrivateAssets>
                   <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
                 </PackageReference>
