@@ -93,16 +93,28 @@
         ":separateMajorReleases"
       ]
     },
-    {
-      "groupName": "microsoft",
-      "matchPackageNames": [
-        "/^Microsoft\\./i",
-        "/^System\\./i"
-      ],
-      "extends": [
-        ":separateMajorReleases"
-      ]
-    },
+	{
+	  "groupName": "microsoft-dotnet",
+	  "matchManagers": ["nuget"],
+	  "matchPackageNames": ["/^Microsoft\\./i"],
+	  "matchSourceUrls": ["https://github.com/dotnet/*"],
+	  "extends": [
+		":separateMajorReleases"
+	  ],
+	  "description": "Microsoft.* packages published from the dotnet GitHub organization"
+	},
+	{
+	  "groupName": "microsoft-non-dotnet",
+	  "matchManagers": ["nuget"],
+	  "matchPackageNames": [
+		"/^Microsoft\\./i",
+		"/^System\\./i"
+	  ],
+	  "extends": [
+		":separateMajorReleases"
+	  ],
+	  "description": "Microsoft.* and System.* packages not from the dotnet GitHub organization"
+	},
     {
       "groupName": "workleap",
       "matchPackageNames": [
