@@ -93,28 +93,28 @@
         ":separateMajorReleases"
       ]
     },
-	{
-	  "groupName": "microsoft-dotnet",
-	  "matchManagers": ["nuget"],
-	  "matchPackageNames": ["/^Microsoft\\./i"],
-	  "matchSourceUrls": ["https://github.com/dotnet/*"],
-	  "extends": [
-		":separateMajorReleases"
-	  ],
-	  "description": "Microsoft.* packages published from the dotnet GitHub organization"
-	},
-	{
-	  "groupName": "microsoft-non-dotnet",
-	  "matchManagers": ["nuget"],
-	  "matchPackageNames": [
-		"/^Microsoft\\./i",
-		"/^System\\./i"
-	  ],
-	  "extends": [
-		":separateMajorReleases"
-	  ],
-	  "description": "Microsoft.* and System.* packages not from the dotnet GitHub organization"
-	},
+    {
+      "groupName": "microsoft-dotnet",
+      "matchPackageNames": [
+        "/^Microsoft\\./i",
+        "/^System\\./i"
+      ],
+      "extends": [
+        ":separateMajorReleases"
+      ]
+    },
+    {
+      "groupName": "microsoft-non-dotnet",
+	  "matchSourceUrls": ["!/^https:\/\/github.com\/dotnet\/"],
+      "matchPackageNames": [
+        "/^Microsoft\\./i",
+        "/^System\\./i"
+      ],
+      "extends": [
+        ":separateMajorReleases"
+      ],
+	  "description": "Microsoft.* and System.* packages not from dotnet (ie: Microsoft.Graph)"
+    },
     {
       "groupName": "workleap",
       "matchPackageNames": [
