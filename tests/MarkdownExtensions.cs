@@ -16,7 +16,7 @@ internal static class MarkdownExtensions
 
     public static string InnerText(this MarkdownObject obj)
     {
-        var inlines = obj.Descendants<LiteralInline>();
+        var inlines = obj.Descendants().Where(item => item is LiteralInline or CodeInline);
         return string.Join(" ", inlines.Select(inline => inline.ToNormalizedString()));
     }
 }

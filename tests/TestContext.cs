@@ -275,7 +275,7 @@ internal sealed class TestContext(
             foreach (var row in rows)
             {
                 var package = row[0].InnerText().Replace("( source )", string.Empty).Trim();
-                var type = row[1].InnerText().Trim();
+                var type = row[1].InnerText().Trim().Replace("`", "", StringComparison.Ordinal);
                 var update = row[2].InnerText().Trim();
 
                 packageUpdateInfos.Add(new PackageUpdateInfos(package, type, update));

@@ -24,6 +24,7 @@
   "ignorePresets": [
     ":ignoreModulesAndTests"
   ],
+  "prBodyColumns": [ "Package", "Type", "Update", "Change" ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
@@ -115,20 +116,20 @@
     {
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^Hangfire(\\.|$)/i"]
+      "matchManagers": [ "nuget" ],
+      "matchPackageNames": [ "/^Hangfire(\\.|$)/i" ]
     },
     {
       "groupName": "meziantou monorepo",
       "description": "Group Gérald Barré's dependencies update in a single PR to avoid conflicts",
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^Meziantou\\./i"]
+      "matchManagers": [ "nuget" ],
+      "matchPackageNames": [ "/^Meziantou\\./i" ]
     },
     {
       "groupName": "mongodb monorepo",
       "description": "Group MongoDB dependencies update in a single PR to avoid conflicts",
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^MongoDB\\./i"]
+      "matchManagers": [ "nuget" ],
+      "matchPackageNames": [ "/^MongoDB\\./i" ]
     },
     {
       "groupName": "github pipeline dependencies",
@@ -146,7 +147,7 @@
     },
     {
       "groupName": "npm",
-      "matchManagers": ["npm"],
+      "matchManagers": [ "npm" ],
       "extends": [
         ":pinDependencies",
         ":pinDevDependencies"
