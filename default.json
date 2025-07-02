@@ -188,7 +188,7 @@
         "nuget"
       ],
       "matchPackageNames": [
-        "MediatR "
+        "MediatR"
       ],
       "allowedVersions": "< 13.0.0",
       "description": "Licensing changed to be commercial. See https://www.jimmybogard.com/automapper-and-mediatr-commercial-editions-launch-today/ for context."
