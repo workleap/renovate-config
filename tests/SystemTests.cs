@@ -98,8 +98,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: @squide/core
-                  Type: dependencies
-                  Update: minor
             """);
     }
 
