@@ -260,7 +260,7 @@ internal sealed class TestContext(
 
         var pullRequestsInfos = new List<PullRequestInfos>(pullRequests.Count);
 
-        foreach (var pullRequest in pullRequests.OrderBy(x => x.Title))
+        foreach (var pullRequest in pullRequests.OrderBy(x => x.Title, StringComparer.Ordinal))
         {
             var markdownDocument = Markdown.Parse(pullRequest.Body!, pipeline);
             var prTitle = pullRequest.Title;
