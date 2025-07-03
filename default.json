@@ -24,6 +24,7 @@
   "ignorePresets": [
     ":ignoreModulesAndTests"
   ],
+  "prBodyColumns": [ "Package", "Type", "Update", "Change", "Age" ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
