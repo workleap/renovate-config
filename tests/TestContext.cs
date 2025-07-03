@@ -81,8 +81,7 @@ internal sealed class TestContext(
 
     public void AddSuccessfulWorkflowFileToSatisfyBranchPolicy()
     {
-        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
-            /*lang=yaml*/"""
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml", /*lang=yaml*/ """
             name: CI
             on:
                 pull_request: 
@@ -104,8 +103,7 @@ internal sealed class TestContext(
 
     public void AddFailingWorkflowFileToSatisfyBranchPolicy()
     {
-        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
-            /*lang=yaml*/"""
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml", /*lang=yaml*/ """
             name: CI
             on:
                 pull_request: 
