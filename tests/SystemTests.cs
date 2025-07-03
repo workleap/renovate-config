@@ -149,19 +149,19 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency dotnet-sdk to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: dotnet-sdk
-                  Type: dotnet-sdk
-                  Update: major
             - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
                   Type: nuget
+                  Update: major
+            - Title: Update dependency dotnet-sdk to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: dotnet-sdk
+                  Type: dotnet-sdk
                   Update: major
             - Title: Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
               Labels:
