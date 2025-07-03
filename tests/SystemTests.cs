@@ -342,11 +342,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: @azure/msal-browser
-                  Type: dependencies
-                  Update: major
                 - Package: @azure/msal-react
-                  Type: dependencies
-                  Update: major
             """);
     }
 
