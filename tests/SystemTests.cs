@@ -52,29 +52,21 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
-                  Type: nuget
-                  Update: patch
             - Title: chore(deps): update dependency system.text.json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
-                  Type: nuget
-                  Update: major
             - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Mongo
-                  Type: nuget
-                  Update: minor
             - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Mongo
-                  Type: nuget
-                  Update: major
             - Title: chore(deps): update dotnet-sdk
               Labels:
                 - renovate
@@ -106,8 +98,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: @squide/core
-                  Type: dependencies
-                  Update: minor
             """);
     }
 
@@ -159,19 +149,19 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: Update dependency dotnet-sdk to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: dotnet-sdk
-                  Type: dotnet-sdk
-                  Update: major
             - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
                   Type: nuget
+                  Update: major
+            - Title: Update dependency dotnet-sdk to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: dotnet-sdk
+                  Type: dotnet-sdk
                   Update: major
             - Title: Update mcr.microsoft.com/dotnet/aspnet Docker tag to redacted
               Labels:
@@ -230,20 +220,10 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: Hangfire
-                  Type: nuget
-                  Update: minor
                 - Package: Hangfire.AspNetCore
-                  Type: nuget
-                  Update: minor
                 - Package: Hangfire.Core
-                  Type: nuget
-                  Update: minor
                 - Package: Hangfire.NetCore
-                  Type: nuget
-                  Update: minor
                 - Package: Hangfire.SqlServer
-                  Type: nuget
-                  Update: minor
             """);
     }
 
@@ -352,11 +332,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: @azure/msal-browser
-                  Type: dependencies
-                  Update: major
                 - Package: @azure/msal-react
-                  Type: dependencies
-                  Update: major
             """);
     }
 
@@ -513,7 +489,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("microsoft-automerge.json");
 
-        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+        testContext.AddFailingWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
@@ -560,7 +536,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("workleap-automerge.json");
 
-        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+        testContext.AddFailingWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddInternalDeveloperPlatformCodeOwnersFile();
 
@@ -600,7 +576,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
         testContext.UseRenovateFile("all-automerge.json");
 
-        testContext.AddFailingWorklowFileToSatisfyBranchPolicy();
+        testContext.AddFailingWorkflowFileToSatisfyBranchPolicy();
 
         testContext.AddFile("project.csproj", /*lang=xml*/
             """
@@ -709,7 +685,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               source  = "Azure/network/azurerm"
               version = "3.5.0"
             }
-            
+
             module "compute" {
               source  = "Azure/compute/azurerm"
               version = "5.1.0"
@@ -719,11 +695,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         testContext.AddFile("README.md",
             """
             # Terraform Project
-            
+
             This is a sample terraform project using Azure modules.
-            
+
             ## Requirements
-            
+
             | Name | Version |
             |------|---------|
             | terraform | >= 1.0 |
@@ -779,11 +755,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
         testContext.AddFile("README.md",
             """
             # Terraform Project
-            
+
             This is a sample terraform project using Azure providers.
-            
+
             ## Requirements
-            
+
             | Name | Version |
             |------|---------|
             | terraform | >= 1.1.0 |
@@ -853,11 +829,9 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: Bash
-                  Type: major
-                  Update: ->
+                  Update: major
                 - Package: PowerShell
-                  Type: major
-                  Update: ->
+                  Update: major
             """);
     }
 }
