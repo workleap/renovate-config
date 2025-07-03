@@ -52,29 +52,21 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
-                  Type: nuget
-                  Update: patch
             - Title: chore(deps): update dependency system.text.json to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: System.Text.Json
-                  Type: nuget
-                  Update: major
             - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Mongo
-                  Type: nuget
-                  Update: minor
             - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Mongo
-                  Type: nuget
-                  Update: major
             - Title: chore(deps): update dotnet-sdk
               Labels:
                 - renovate
