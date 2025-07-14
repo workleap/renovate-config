@@ -16,14 +16,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             {
                 "$schema": "https://docs.renovatebot.com/renovate-schema.json",
                 "extends": [
-                  "github>workleap/renovate-config"
+                  "github>workleap/renovate-config",
+                  ":automergeBranch"
                 ],
                 "packageRules": [
                     {
                       "matchPaths": ["src/auto/**"],
                       "matchUpdateTypes": ["minor", "patch"],
                       "extends": [
-                         ":automergeBranch",
                          ":automergeMinor"
                       ]
                     }
@@ -60,21 +60,14 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: fix(deps): update dependency left-pad to redacted
+            - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
-                - Package: left-pad
+                - Package: Workleap.Extensions.Mongo
                   Type: dependencies
                   Update: minor
               IsAutoMergeEnabled: true
-            - Title: fix(deps): update dependency left-pad to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: left-pad
-                  Type: dependencies
-                  Update: minor
             """);
 
         await testContext.AssertCommits("");
