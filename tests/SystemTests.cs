@@ -648,7 +648,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Configuration.Substitution
                   Type: nuget
-                  Update: patch
+                  Update: minor
               IsAutoMergeEnabled: true
             """);
     }
@@ -833,5 +833,83 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: PowerShell
                   Update: major
             """);
+    }
+
+    [Fact]
+    public async Task Given_Folder_Specific_AutoMerge_Config_Then_Only_AutoMerges_Matching_Folder()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        // Configure Renovate to enable automerge only for dependencies in src/auto/.
+        // Major updates are disabled to ensure test determinism.
+        testContext.AddFile("renovate.json", /*lang=json*/
+            """
+            {
+                "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+                "extends": [
+                  "github>workleap/renovate-config"
+                ],
+                "packageRules": [
+                    {
+                      "matchUpdateTypes": ["major"],
+                      "enabled": false
+                    },
+                    {
+                      "matchFileNames": ["src/auto/**"],
+                      "extends": [
+                         ":automergeMinor",
+                         ":automergeBranch"
+                      ]
+                    }
+                ]
+            }
+            """);
+
+        // Add dependencies in both automerge-enabled and non-enabled folders
+        testContext.AddFile("src/auto/project.csproj", /*lang=xml*/
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup>
+                <PackageReference Include="System.Text.Json" Version="8.0.0" />
+              </ItemGroup>
+            </Project>
+            """);
+
+        testContext.AddFile(
+            "src/manual/project.csproj", /*lang=xml*/
+            """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <ItemGroup>
+                <PackageReference Include="Workleap.Extensions.Mongo" Version="1.11.0" />
+              </ItemGroup>
+            </Project>
+            """);
+
+        testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
+
+        // Run Renovate multiple times to ensure only dependencies in src/auto/ are automerged.
+        await testContext.PushFilesOnTemporaryBranch();
+        await testContext.RunRenovate();
+        await testContext.WaitForBranchPolicyChecksToSucceed();
+        await testContext.RunRenovate();
+        await testContext.WaitForBranchPolicyChecksToSucceed();
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update dependency workleap.extensions.mongo to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Workleap.Extensions.Mongo
+            """);
+
+        await testContext.AssertCommits(
+            """
+                    - Message:
+                        choreto redacted: update dependency system.text.json to redacted
+
+                        Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
+                    """);
     }
 }
