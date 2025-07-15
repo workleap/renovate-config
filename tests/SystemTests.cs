@@ -648,7 +648,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               PackageUpdatesInfos:
                 - Package: Workleap.Extensions.Configuration.Substitution
                   Type: nuget
-                  Update: patch
+                  Update: minor
               IsAutoMergeEnabled: true
             """);
     }
