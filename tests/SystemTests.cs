@@ -840,8 +840,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
-        // Add renovate config that enables automerge only for src/auto
-        // Disable major to make test more idempotent
+        // Configure Renovate to enable automerge only for dependencies in src/auto/.
+        // Major updates are disabled to ensure test determinism.
         testContext.AddFile("renovate.json", /*lang=json*/
             """
             {
@@ -865,7 +865,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
             }
             """);
 
-        // Add updatable dependencies in both folders
+        // Add dependencies in both automerge-enabled and non-enabled folders
         testContext.AddFile("src/auto/project.csproj", /*lang=xml*/
             """
             <Project Sdk="Microsoft.NET.Sdk">
@@ -887,6 +887,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         testContext.AddSuccessfulWorkflowFileToSatisfyBranchPolicy();
 
+        // Run Renovate multiple times to ensure only dependencies in src/auto/ are automerged.
         await testContext.PushFilesOnTemporaryBranch();
         await testContext.RunRenovate();
         await testContext.WaitForBranchPolicyChecksToSucceed();
