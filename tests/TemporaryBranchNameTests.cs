@@ -4,6 +4,26 @@ namespace renovate_config.tests;
 
 public sealed class TemporaryBranchNameTests
 {
+    [Fact]
+    public void WhenCreatingATemporaryFeatureBranchName_ThenCanParseItBack()
+    {
+        var tempBranchA = TemporaryFeatureBranchName.Create();
+        var tempBranchB = TemporaryFeatureBranchName.Create();
+
+        Assert.True(TemporaryFeatureBranchName.TryParse(tempBranchA.Name, out _));
+        Assert.True(TemporaryFeatureBranchName.TryParse(tempBranchB.Name, out _));
+    }
+
+    [Fact]
+    public void WhenCreatingATemporaryRenovateBranchName_ThenCanParseItBack()
+    {
+        var tempBranchA = new TemporaryRenovateBranchName(TemporaryFeatureBranchName.Create());
+        var tempBranchB = new TemporaryRenovateBranchName(TemporaryFeatureBranchName.Create());
+
+        Assert.True(TemporaryRenovateBranchName.TryParse(tempBranchA.Prefix, out _));
+        Assert.True(TemporaryRenovateBranchName.TryParse(tempBranchB.Prefix, out _));
+    }
+
     [Theory]
     [InlineData("main")]
     [InlineData("renovate/major-microsoft")]

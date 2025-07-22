@@ -8,6 +8,7 @@ using GitHub.Octokit.Client;
 using GitHub.Octokit.Client.Authentication;
 using Markdig;
 using Markdig.Extensions.Tables;
+using Markdig.Syntax;
 using Meziantou.Framework;
 using Meziantou.Framework.InlineSnapshotTesting;
 using Octokit;
@@ -80,8 +81,7 @@ internal sealed class TestContext(
 
     public void AddSuccessfulWorkflowFileToSatisfyBranchPolicy()
     {
-        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
-            /*lang=yaml*/"""
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml", /*lang=yaml*/ """
             name: CI
             on:
                 pull_request: 
@@ -101,10 +101,9 @@ internal sealed class TestContext(
             );
     }
 
-    public void AddFailingWorklowFileToSatisfyBranchPolicy()
+    public void AddFailingWorkflowFileToSatisfyBranchPolicy()
     {
-        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml",
-            /*lang=yaml*/"""
+        repositoryDirectory.CreateTextFile(".github/workflows/ci.yml", /*lang=yaml*/ """
             name: CI
             on:
                 pull_request: 
@@ -261,24 +260,38 @@ internal sealed class TestContext(
 
         var pullRequestsInfos = new List<PullRequestInfos>(pullRequests.Count);
 
-        foreach (var pullRequest in pullRequests.OrderBy(x => x.Title))
+        foreach (var pullRequest in pullRequests.OrderBy(x => x.Title, StringComparer.Ordinal))
         {
             var markdownDocument = Markdown.Parse(pullRequest.Body!, pipeline);
             var prTitle = pullRequest.Title;
-            var prLabels = pullRequest.Labels?.Select(x => x.Name).Order();
+            var prLabels = pullRequest.Labels?.Select(x => x.Name).Order().ToArray();
 
             var table = markdownDocument.OfType<Table>().First();
-            var rows = table.Skip(1).OfType<TableRow>().ToArray();
+            var rows = table.OfType<TableRow>().ToArray();
+            var headers = rows[0].Select(cell => cell.InnerText()).ToArray();
 
             var packageUpdateInfos = new List<PackageUpdateInfos>(rows.Length);
 
-            foreach (var row in rows)
+            foreach (var row in rows.Skip(1))
             {
-                var package = row[0].InnerText().Replace("( source )", string.Empty).Trim();
-                var type = row[1].InnerText().Trim();
-                var update = row[2].InnerText().Trim();
+                var package = GetCell("Package")?.InnerText().Replace("( source )", string.Empty).Trim();
+                var type = GetCell("Type")?.InnerText().Trim();
+                var update = GetCell("Update")?.InnerText().Trim();
 
                 packageUpdateInfos.Add(new PackageUpdateInfos(package, type, update));
+
+                MarkdownObject? GetCell(string title)
+                {
+                    for (var i = 0; i < headers.Length; i++)
+                    {
+                        if (headers[i] == title)
+                        {
+                            return row[i];
+                        }
+                    }
+
+                    return null;
+                }
             }
 
             pullRequestsInfos.Add(new PullRequestInfos(

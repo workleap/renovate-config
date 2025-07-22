@@ -24,6 +24,7 @@
   "ignorePresets": [
     ":ignoreModulesAndTests"
   ],
+  "prBodyColumns": [ "Package", "Type", "Update", "Change", "Age" ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
@@ -32,8 +33,8 @@
   "configMigration": true,
   "minimumReleaseAge": "3 days",
   "azure-pipelines": {
-    "fileMatch": [
-      "(^|/)(\\.azuredevops|\\.ado|pipelines)/.+\\.ya?ml$"
+    "managerFilePatterns": [
+      "/(^|/)(\\.azuredevops|\\.ado|pipelines)/.+\\.ya?ml$/"
     ],
     "enabled": true
   },
@@ -41,7 +42,7 @@
     {
       "customType": "regex",
       "description": "nuspec files manager",
-      "fileMatch": [
+      "managerFilePatterns": [
         "\\.nuspec$"
       ],
       "matchStringsStrategy": "any",
@@ -115,20 +116,20 @@
     {
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^Hangfire(\\.|$)/i"]
+      "matchManagers": [ "nuget" ],
+      "matchPackageNames": [ "/^Hangfire(\\.|$)/i" ]
     },
     {
       "groupName": "meziantou monorepo",
       "description": "Group Gérald Barré's dependencies update in a single PR to avoid conflicts",
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^Meziantou\\./i"]
+      "matchManagers": [ "nuget" ],
+      "matchPackageNames": [ "/^Meziantou\\./i" ]
     },
     {
       "groupName": "mongodb monorepo",
       "description": "Group MongoDB dependencies update in a single PR to avoid conflicts",
-      "matchManagers": ["nuget"],
-      "matchPackageNames": ["/^MongoDB\\./i"]
+      "matchManagers": [ "nuget" ],
+      "matchPackageNames": [ "/^MongoDB\\./i" ]
     },
     {
       "groupName": "github pipeline dependencies",
@@ -146,7 +147,7 @@
     },
     {
       "groupName": "npm",
-      "matchManagers": ["npm"],
+      "matchManagers": [ "npm" ],
       "extends": [
         ":pinDependencies",
         ":pinDevDependencies"
@@ -172,6 +173,26 @@
       ],
       "allowedVersions": "<= 8.1.97",
       "description": "Licensing changed from v9 and onward to be commercial. See https://github.com/PrismLibrary/Prism/releases/tag/9.0.264-pre for context."
+    },
+    {
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchPackageNames": [
+        "AutoMapper"
+      ],
+      "allowedVersions": "< 15.0.0",
+      "description": "Licensing changed to be commercial. See https://www.jimmybogard.com/automapper-and-mediatr-commercial-editions-launch-today/ for context."
+    },
+    {
+      "matchManagers": [
+        "nuget"
+      ],
+      "matchPackageNames": [
+        "MediatR"
+      ],
+      "allowedVersions": "< 13.0.0",
+      "description": "Licensing changed to be commercial. See https://www.jimmybogard.com/automapper-and-mediatr-commercial-editions-launch-today/ for context."
     }
   ],
   "vulnerabilityAlerts": {

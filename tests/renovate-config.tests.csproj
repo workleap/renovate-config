@@ -11,11 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CliWrap" Version="3.8.2" />
+    <PackageReference Include="CliWrap" Version="3.9.0" />
     <PackageReference Include="GitHub.Octokit.SDK" Version="0.0.31" />
     <PackageReference Include="Markdig" Version="0.41.0" />
     <PackageReference Include="Meziantou.Framework.FullPath" Version="1.0.18" />
-    <PackageReference Include="Meziantou.Framework.InlineSnapshotTesting" Version="3.3.10" />
+    <PackageReference Include="Meziantou.Framework.InlineSnapshotTesting" Version="3.3.11" />
     <PackageReference Include="Meziantou.Framework.TemporaryDirectory" Version="1.0.13" />
     <PackageReference Include="Meziantou.Xunit.ParallelTestFramework" Version="2.3.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
