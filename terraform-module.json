@@ -11,12 +11,9 @@
   "packageRules": [
     {
       "matchDatasources": ["terraform-module"],
-      "matchPackageNames": ["Azure/naming/azurerm"],
-      "registryUrls": [
-        "https://registry.terraform.io"
-      ],
-      "groupName": "Azure/naming/azurerm upgrades",
-      "automerge": true,
+      "groupName": "Terraform module minor and patch upgrades",
+      "groupSlug": "terraform-module-minor-patch",
+      "matchUpdateTypes": ["minor", "patch"],
       "postUpgradeTasks": {
         "commands": [
           "terraform-docs markdown ./{{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
@@ -24,18 +21,6 @@
         "fileFilters": ["**/*.tf", "**/*.tfvars", "**/*.tftest"],
         "executionMode": "update"
       }
-    },
-    {
-      "matchDatasources": ["terraform-module"],
-      "matchPackageNames": ["terraform-workleap-enterprise-azure-governance"],
-      "groupName": "automerge specific terraform module",
-      "matchUpdateTypes": ["minor", "patch"], 
-      "automerge": true
-    },
-    {
-      "matchDatasources": ["terraform-module"],
-      "groupName": "Terraform module minor and patch upgrades",
-      "groupSlug": "terraform-module-minor-patch"
     }
   ]
 }
