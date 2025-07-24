@@ -51,6 +51,18 @@
       ],
       "datasourceTemplate": "nuget",
       "versioningTemplate": "nuget"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "^.*\\.ya?ml$"
+      ],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "\\s*ScaffolditTemplateVersion\\s*:\\s*(?<currentValue>[-a-z0-9.]*)"
+      ],
+      "datasourceTemplate": "nuget",
+      "depNameTemplate": "Workleap.Scaffolding"
     }
   ],
   "packageRules": [
@@ -117,7 +129,9 @@
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
       "matchManagers": [ "nuget" ],
-      "matchPackageNames": [ "/^Hangfire(\\.|$)/i" ]
+      "matchPackageNames": [ 
+        "/^Hangfire(\\.|$)/i",
+        "/^ShareGate\\.Infra\\.Hangfire(\\.|$)/i"]
     },
     {
       "groupName": "meziantou monorepo",
