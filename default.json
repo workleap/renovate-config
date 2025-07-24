@@ -54,8 +54,13 @@
     },
     {
       "customType": "regex",
-      "fileMatch": ["^.*\\.yaml$", "^.*\\.yml$"],
-      "matchStrings": ["\\s*ScaffolditTemplateVersion\\s*:\\s*(?<currentValue>[-a-z0-9.]*)"],
+      "managerFilePatterns": [
+        "^.*\\.ya?ml$"
+      ],
+      "matchStringsStrategy": "any",
+      "matchStrings": [
+        "\\s*ScaffolditTemplateVersion\\s*:\\s*(?<currentValue>[-a-z0-9.]*)"
+      ],
       "datasourceTemplate": "nuget",
       "depNameTemplate": "Workleap.Scaffolding"
     }
