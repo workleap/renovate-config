@@ -129,7 +129,9 @@
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
       "matchManagers": [ "nuget" ],
-      "matchPackageNames": [ "/^Hangfire(\\.|$)/i" ]
+      "matchPackageNames": [ 
+        "/^Hangfire(\\.|$)/i",
+        "/^ShareGate\\.Infra\\.Hangfire(\\.|$)/i"]
     },
     {
       "groupName": "meziantou monorepo",
