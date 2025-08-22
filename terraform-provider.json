@@ -3,7 +3,7 @@
   "description": "Upgrade all terraform providers with minor and patch upgrades",
   "postUpgradeTasks": {
     "commands": [
-      "terraform-docs markdown ./{{{ packageFileDir }}} --hide resources,data-sources --output-file README.md --output-mode replace"
+      "terraform-docs markdown table --output-file README.md --hide resources,data-sources ./{{{ packageFileDir }}}"
     ],
     "fileFilters": ["**/*.tf", "**/*.tfvars", "**/*.tftest"],
     "executionMode": "update"
