@@ -14,10 +14,6 @@
       "groupName": "Terraform module minor and patch upgrades",
       "groupSlug": "terraform-module-minor-patch",
       "matchUpdateTypes": ["minor", "patch"],
-      "postUpgradeTasks": {
-        "commands": [
-          "terraform-docs markdown table --output-file README.md --hide resources,data-sources ./{{{ packageFileDir }}}"
-        ],
         "fileFilters": ["**/*.tf", "**/*.tfvars", "**/*.tftest"],
         "executionMode": "update"
       }
