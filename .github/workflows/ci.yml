@@ -20,6 +20,7 @@ permissions:
 jobs:
   main:
     runs-on: [idp]
+    environment: ci
 
     steps:
       - uses: actions/checkout@v5
@@ -36,13 +37,13 @@ jobs:
 
       - name: Get Secret
         id: get_secret
-        uses: workleap/wl-reusable-workflows/retrieve-managed-secret@feature/idp-3311-shared-action
+        uses: workleap/wl-reusable-workflows/retrieve-managed-secret@main
         with:
           azure-client-id: ${{ vars.AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ vars.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
           keyvault-name: ${{ vars.IDP_CICD_KEYVAULT_NAME }}
-          secret-name: renovate-github-pat
+          secret-name: renovate-config-github-pat
 
       - uses: actions/setup-dotnet@v4
 
