@@ -637,7 +637,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
               PackageUpdatesInfos:
                 - Package: @squide/core
                   Type: dependencies
-                  Update: major  
+                  Update: major
             - Title: Update dependency Hangfire.NetCore to redacted
               Labels:
                 - renovate
