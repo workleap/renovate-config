@@ -98,6 +98,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - renovate
               PackageUpdatesInfos:
                 - Package: @squide/core
+            - Title: fix(deps): update dependency @squide/core to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @squide/core
             """);
     }
 
@@ -149,6 +154,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
+            - Title: Update dependency @squide/core to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @squide/core
+                  Type: dependencies
+                  Update: major
             - Title: Update dependency System.Text.Json to redacted
               Labels:
                 - renovate
@@ -619,6 +631,13 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                   Type: dependencies
                   Update: minor
               IsAutoMergeEnabled: true
+            - Title: Update dependency @squide/core to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: @squide/core
+                  Type: dependencies
+                  Update: major
             - Title: Update dependency Hangfire.NetCore to redacted
               Labels:
                 - renovate

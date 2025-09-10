@@ -70,6 +70,7 @@
       "description": "Allow Workleap's NuGet and NPM packages to be updated immediately",
       "minimumReleaseAge": "0 days",
       "matchPackageNames": [
+        "/^workleap\\//i",
         "/^Workleap\\./i",
         "/^Officevibe\\./i",
         "/^Sharegate\\./i",
@@ -214,4 +215,3 @@
     ]
   }
 }
-
