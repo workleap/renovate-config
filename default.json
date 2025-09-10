@@ -82,6 +82,14 @@
       ]
     },
     {
+      "description": "Allow Workleap's terraform modules to be updated immediately",
+      "minimumReleaseAge": "0 days",
+      "matchDatasources": ["terraform-module"],
+      "matchPackageNames": [
+        "/^app\\.terraform\\.io\\/Workleap/"
+      ]
+    },
+    {
       "groupName": "gitversion-msbuild",
       "description": "Disable major updates as their are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
       "matchPackageNames": [

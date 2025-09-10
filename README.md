@@ -67,7 +67,23 @@ Using the same process of extending the base configuration explained above, you 
   "extends": [
     "github>workleap/renovate-config",
     "github>workleap/renovate-config//terraform-module.json",
+    "github>workleap/renovate-config//terraform-provider.json"
+  ]
+}
+```
+
+#### Enabling terraform-docs integration
+
+If you want Renovate to automatically run `terraform-docs` to update your README.md file when terraform modules or providers are updated, you can extend the terraform-docs preset:
+
+```json
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "github>workleap/renovate-config",
+    "github>workleap/renovate-config//terraform-module.json",
     "github>workleap/renovate-config//terraform-provider.json",
+    "github>workleap/renovate-config//terraform-docs.json"
   ]
 }
 ```
