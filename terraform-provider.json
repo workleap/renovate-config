@@ -1,13 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Upgrade all terraform providers with minor and patch upgrades",
-  "postUpgradeTasks": {
-    "commands": [
-      "terraform-docs markdown table --output-file README.md --hide resources,data-sources ./{{{ packageFileDir }}}"
-    ],
-    "fileFilters": ["**/*.tf", "**/*.tfvars", "**/*.tftest"],
-    "executionMode": "update"
-  },
   "packageRules": [
     {
       "matchDatasources": ["terraform-provider"],
