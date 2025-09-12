@@ -4,6 +4,9 @@
   "packageRules": [
     {
       "matchDatasources": ["terraform-provider"],
+      "lockFileMaintenance": {
+        "enabled": true
+      },
       "groupName": "Terraform provider minor and patch upgrades",
       "groupSlug": "terraform-provider-minor-patch"
     },
