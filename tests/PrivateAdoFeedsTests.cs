@@ -4,7 +4,7 @@ namespace renovate_config.tests;
 
 public class PrivateAdoFeedsTests(ITestOutputHelper testOutputHelper)
 {
-[Fact]
+    [Fact]
     public async Task Given_Various_Updates_From_ADO_Feeds_When_Renovate_Then_Create_Prs()
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);

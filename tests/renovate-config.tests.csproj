@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <RootNamespace>renovate_config.tests</RootNamespace>
@@ -34,5 +33,4 @@
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-
 </Project>
