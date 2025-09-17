@@ -27,7 +27,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '^22.11.0'
       
@@ -45,7 +45,7 @@ jobs:
           keyvault-name: ${{ vars.WORKLEAP_GLOBAL_KEYVAULT_NAME }}
           secret-name: renovate-github-pat
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
 
       - name: Test with the dotnet CLI
         run: dotnet test tests 
