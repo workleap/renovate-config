@@ -116,7 +116,7 @@
       ]
     },
     {
-      "groupName": "microsoft",
+      "groupName": "microsoft-dotnet",
       "matchPackageNames": [
         "/^Microsoft\\./i",
         "/^System\\./i"
@@ -124,6 +124,18 @@
       "extends": [
         ":separateMajorReleases"
       ]
+    },
+    {
+      "groupName": "microsoft-non-dotnet",
+	  "matchSourceUrls": ["!/^https:\/\/github.com\/dotnet\/"],
+      "matchPackageNames": [
+        "/^Microsoft\\./i",
+        "/^System\\./i"
+      ],
+      "extends": [
+        ":separateMajorReleases"
+      ],
+	  "description": "Microsoft.* and System.* packages not from dotnet (ie: Microsoft.Graph)"
     },
     {
       "groupName": "workleap",
