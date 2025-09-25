@@ -75,7 +75,7 @@ internal sealed class TestContext(
     {
         repositoryDirectory.CreateTextFile("CODEOWNERS",
             """
-            * @workleap/internal-developer-platform
+            * @workleap/foundation-engineering
             """);
     }
 
@@ -291,6 +291,7 @@ internal sealed class TestContext(
                     }
 
                     return null;
+
                 }
             }
 
