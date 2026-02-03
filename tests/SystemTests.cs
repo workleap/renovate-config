@@ -339,7 +339,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: @storybook/addon-interactions
                   Type: devDependencies
                   Update: pin
-            - Title: fix(deps): update npm (major)
+            - Title: fix(deps): update npm to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
