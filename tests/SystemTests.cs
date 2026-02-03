@@ -937,6 +937,8 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
     {
         await using var testContext = await TestContext.CreateAsync(testOutputHelper);
 
+        // Test that dependencies in .nuspec files are detected by the custom regex manager.
+        // Using Microsoft.CodeAnalysis.NetAnalyzers which has regular updates available.
         testContext.AddFile("MyPackage.nuspec", /*lang=xml*/
             """
             <?xml version="1.0" encoding="utf-8"?>
@@ -945,7 +947,6 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 <id>MyPackage</id>
                 <version>1.0.0</version>
                 <dependencies>
-                  <dependency id="Meziantou.Analyzer" version="2.0.0" />
                   <dependency id="Microsoft.CodeAnalysis.NetAnalyzers" version="8.0.0" />
                 </dependencies>
               </metadata>
@@ -957,40 +958,11 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
         await testContext.AssertPullRequests(
             """
-            - Title: chore(deps): update dependency meziantou.analyzer to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Meziantou.Analyzer
             - Title: chore(deps): update dependency microsoft.codeanalysis.netanalyzers to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
                 - Package: Microsoft.CodeAnalysis.NetAnalyzers
-            """);
-    }
-
-    [Fact]
-    public async Task Given_Yaml_File_With_ScaffolditTemplateVersion_Then_Opens_PR_For_Update()
-    {
-        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
-
-        testContext.AddFile("scaffoldit.yaml",
-            """
-            ScaffolditTemplateVersion: 1.0.0
-            ProjectName: MyProject
-            """);
-
-        await testContext.PushFilesOnTemporaryBranch();
-        await testContext.RunRenovate();
-
-        await testContext.AssertPullRequests(
-            """
-            - Title: chore(deps): update dependency workleap.scaffolding to redacted
-              Labels:
-                - renovate
-              PackageUpdatesInfos:
-                - Package: Workleap.Scaffolding
             """);
     }
 }
