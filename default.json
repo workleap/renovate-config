@@ -43,7 +43,7 @@
       "customType": "regex",
       "description": "nuspec files manager",
       "managerFilePatterns": [
-        "\\.nuspec$"
+        "/\\.nuspec$/"
       ],
       "matchStringsStrategy": "any",
       "matchStrings": [
@@ -55,7 +55,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "^.*\\.ya?ml$"
+        "/^.*\\.ya?ml$/"
       ],
       "matchStringsStrategy": "any",
       "matchStrings": [
