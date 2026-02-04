@@ -339,7 +339,7 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
                 - Package: @storybook/addon-interactions
                   Type: devDependencies
                   Update: pin
-            - Title: fix(deps): update npm (major)
+            - Title: fix(deps): update npm to redacted
               Labels:
                 - renovate
               PackageUpdatesInfos:
@@ -930,5 +930,39 @@ public sealed class SystemTests(ITestOutputHelper testOutputHelper)
 
                         Co-authored-by: Renovate Bot <renovate@whitesourcesoftware.com>
                     """);
+    }
+
+    [Fact]
+    public async Task Given_Nuspec_File_Dependencies_Then_Opens_PRs_For_Updates()
+    {
+        await using var testContext = await TestContext.CreateAsync(testOutputHelper);
+
+        // Test that dependencies in .nuspec files are detected by the custom regex manager.
+        // Using Microsoft.CodeAnalysis.NetAnalyzers which has regular updates available.
+        testContext.AddFile("MyPackage.nuspec", /*lang=xml*/
+            """
+            <?xml version="1.0" encoding="utf-8"?>
+            <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+              <metadata>
+                <id>MyPackage</id>
+                <version>1.0.0</version>
+                <dependencies>
+                  <dependency id="Microsoft.CodeAnalysis.NetAnalyzers" version="8.0.0" />
+                </dependencies>
+              </metadata>
+            </package>
+            """);
+
+        await testContext.PushFilesOnTemporaryBranch();
+        await testContext.RunRenovate();
+
+        await testContext.AssertPullRequests(
+            """
+            - Title: chore(deps): update dependency microsoft.codeanalysis.netanalyzers to redacted
+              Labels:
+                - renovate
+              PackageUpdatesInfos:
+                - Package: Microsoft.CodeAnalysis.NetAnalyzers
+            """);
     }
 }

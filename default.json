@@ -43,7 +43,7 @@
       "customType": "regex",
       "description": "nuspec files manager",
       "managerFilePatterns": [
-        "\\.nuspec$"
+        "/\\.nuspec$/"
       ],
       "matchStringsStrategy": "any",
       "matchStrings": [
@@ -55,7 +55,7 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "^.*\\.ya?ml$"
+        "/^.*\\.ya?ml$/"
       ],
       "matchStringsStrategy": "any",
       "matchStrings": [
@@ -92,7 +92,7 @@
     },
     {
       "groupName": "gitversion-msbuild",
-      "description": "Disable major updates as their are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
+      "description": "Disable major updates as there are breaking changes. The documentation is not complete, so it would require time to figure out the new configuration",
       "matchPackageNames": [
         "/^GitVersion\\.MsBuild$/i",
         "/^gitversion\\.tool$/i"
@@ -103,7 +103,7 @@
     },
     {
       "groupName": "dotnet-sdk",
-      "description": "Update major and non-major .NET SDK and runtime updates seperately to isolate breaking changes with a 3-day delay to account for the two of them (global.json, Docker images) not releasing at the same time. https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/",
+      "description": "Update major and non-major .NET SDK and runtime updates separately to isolate (global.json, Docker images) not releasing at the same time (https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/). minimumReleaseAge is disabled because Docker images don't provide release timestamps.",
       "matchPackageNames": [
         "dotnet-sdk",
         "mcr.microsoft.com/dotnet/sdk",
@@ -113,7 +113,8 @@
       ],
       "extends": [
         ":separateMajorReleases"
-      ]
+      ],
+      "minimumReleaseAge": "0 days"
     },
     {
       "groupName": "microsoft",
@@ -138,7 +139,7 @@
       "groupName": "hangfire monorepo",
       "description": "Group Hangfire dependencies to make sure the build succeeds since they have strict version restrictions",
       "matchManagers": [ "nuget" ],
-      "matchPackageNames": [ 
+      "matchPackageNames": [
         "/^Hangfire(\\.|$)/i",
         "/^ShareGate\\.Infra\\.Hangfire(\\.|$)/i"]
     },
@@ -162,11 +163,12 @@
     },
     {
       "groupName": "azure devops pipeline dependencies",
-      "description": "Group Azure DevOps pipeline dependencies update in a single PR to avoid conflicts. Pin major version only, which is ADO's default behavior.",
+      "description": "Group Azure DevOps pipeline dependencies update in a single PR to avoid conflicts. Pin major version only, which is ADO's default behavior. minimumReleaseAge is disabled because the azure-pipelines-tasks datasource doesn't provide release timestamps.",
       "matchDatasources": [
         "azure-pipelines-tasks"
       ],
-      "extractVersion": "^(?<version>\\d+)"
+      "extractVersion": "^(?<version>\\d+)",
+      "minimumReleaseAge": "0 days"
     },
     {
       "groupName": "npm",
