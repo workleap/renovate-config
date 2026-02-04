@@ -167,7 +167,8 @@
       "matchDatasources": [
         "azure-pipelines-tasks"
       ],
-      "extractVersion": "^(?<version>\\d+)"
+      "extractVersion": "^(?<version>\\d+)",
+      "minimumReleaseAge": "0 days"
     },
     {
       "groupName": "npm",
