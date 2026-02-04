@@ -103,7 +103,7 @@
     },
     {
       "groupName": "dotnet-sdk",
-      "description": "Update major and non-major .NET SDK and runtime updates seperately to isolate (global.json, Docker images) not releasing at the same time (https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/). minimumReleaseAge is disabled because Docker images don't provide release timestamps.",
+      "description": "Update major and non-major .NET SDK and runtime updates separately to isolate (global.json, Docker images) not releasing at the same time (https://anthonysimmon.com/automate-dotnet-sdk-updates-global-json-renovate/). minimumReleaseAge is disabled because Docker images don't provide release timestamps.",
       "matchPackageNames": [
         "dotnet-sdk",
         "mcr.microsoft.com/dotnet/sdk",
